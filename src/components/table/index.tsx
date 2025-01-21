@@ -12,7 +12,7 @@ type DataTableProps = {
   children: React.ReactNode
 }
 
-export const DataTable = ({ headers, children }: DataTableProps) => {
+export const DataTable = ({ headers=[], children }: DataTableProps) => {
   return (
     <Table className="rounded-t-xl overflow-hidden">
       <TableHeader>

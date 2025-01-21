@@ -1,26 +1,22 @@
-import { onLoginUser } from '@/actions/auth'
-import SideBar from '@/components/sidebar'
-import { ChatProvider } from '@/context/user-chat-context'
-import React from 'react'
+import React from "react";
+import SideBar from "@/components/sidebar";
+import { currentUser } from "@clerk/nextjs/server";
 
 type Props = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 const OwnerLayout = async ({ children }: Props) => {
-  const authenticated = await onLoginUser()
-  if (!authenticated) return null
+  const authenticated = await currentUser();
+
+  if (!authenticated) return null;
 
   return (
-    <ChatProvider>
-      <div className="flex h-screen w-full">
-        <SideBar domains={authenticated.domain} />
-        <div className="h-screen flex flex-col pl-20 md:pl-4">
-          {children}
-        </div>
-      </div>
-    </ChatProvider>
-  )
-}
+    <div className="flex gap-8 h-screen w-full bg-muted p-4">
+      <SideBar />
+      <div className="flex flex-col w-full">{children}</div>
+    </div>
+  );
+};
 
-export default OwnerLayout
+export default OwnerLayout;

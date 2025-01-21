@@ -1,5 +1,5 @@
 import React from 'react'
-import TabsMenu from '../tabs/intex'
+import TabsMenu from '../tabs'
 import { SideSheet } from '../sheet'
 import { Plus } from 'lucide-react'
 import { CreateProductForm } from './product-form'

@@ -1,102 +1,65 @@
-import CalIcon from '@/icons/cal-icon'
-import ChatIcon from '@/icons/chat-icon'
-import DashboardIcon from '@/icons/dashboard-icon'
-import EmailIcon from '@/icons/email-icon'
-import HelpDeskIcon from '@/icons/help-desk-icon'
-import IntegrationsIcon from '@/icons/integrations-icon'
-import SettingsIcon from '@/icons/settings-icon'
-import StarIcon from '@/icons/star-icon'
-import TimerIcon from '@/icons/timer-icon'
-import { ChartLine } from 'lucide-react'
+import {
+  Bot,
+  Box,
+  Calendar,
+  ChartLineIcon,
+  Contact,
+  FileText,
+  MessageCircle,
+  MonitorCog,
+  Settings,
+  User,
+} from "lucide-react";
+import { JSX } from "react";
 
 type SIDE_BAR_MENU_PROPS = {
-  label: string
-  icon: JSX.Element
-  path: string
-}
+  label: string;
+  icon: JSX.Element;
+  path: string;
+};
 
 export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
   {
-    label: 'Dashboard',
-    icon: <ChartLine/>,
-    path: 'dashboard',
+    label: "Dashboard",
+    icon: <ChartLineIcon />,
+    path: "dashboard",
   },
   {
-    label: 'Conversations',
-    icon: <ChatIcon />,
-    path: 'conversation',
+    label: "Prospects",
+    icon: <Contact />,
+    path: "prospects",
   },
   {
-    label: 'Integrations',
-    icon: <IntegrationsIcon />,
-    path: 'integration',
+    label: "Products",
+    icon: <Box />,
+    path: "product",
   },
   {
-    label: 'Settings',
-    icon: <SettingsIcon />,
-    path: 'settings',
+    label: "Conversations",
+    icon: <MessageCircle />,
+    path: "conversation",
   },
   {
-    label: 'Appointments',
-    icon: <CalIcon />,
-    path: 'appointment',
+    label: "Appointments",
+    icon: <Calendar />,
+    path: "appointment",
   },
   {
-    label: 'Email Marketing',
-    icon: <EmailIcon />,
-    path: 'email-marketing',
+    label: "Settings",
+    icon: <Settings />,
+    path: "settings",
   },
-]
+];
 
-type TABS_MENU_PROPS = {
-  label: string
-  icon?: JSX.Element
-}
+type SETTINGS_TABS_PROPS = {
+  label: string;
+  path: string;
+  icon: JSX.Element;
+};
 
-export const TABS_MENU: TABS_MENU_PROPS[] = [
-  {
-    label: 'unread',
-    icon: <EmailIcon />,
-  },
-  {
-    label: 'all',
-    icon: <EmailIcon />,
-  },
-  {
-    label: 'expired',
-    icon: <TimerIcon />,
-  },
-  {
-    label: 'starred',
-    icon: <StarIcon />,
-  },
-]
-
-export const HELP_DESK_TABS_MENU: TABS_MENU_PROPS[] = [
-  {
-    label: 'help desk',
-  },
-  {
-    label: 'questions',
-  },
-]
-
-export const APPOINTMENT_TABLE_HEADER = [
-  'Name',
-  'RequestedTime',
-  'Added Time',
-  'Domain',
-]
-
-export const EMAIL_MARKETING_HEADER = ['Id', 'Email', 'Answers', 'Domain']
-
-export const BOT_TABS_MENU: TABS_MENU_PROPS[] = [
-  {
-    label: 'chat',
-    icon: <ChatIcon />,
-  },
-  {
-    label: 'helpdesk',
-    icon: <HelpDeskIcon />,
-  },
-]
+export const SETTINGS_TABS: SETTINGS_TABS_PROPS[] = [
+  { label: "Account", path: "account", icon: <User /> },
+  { label: "Agent", path: "agent", icon: <Bot /> },
+  { label: "Script", path: "script", icon: <FileText /> },
+  { label: "Advance", path: "advance", icon: <MonitorCog /> },
+];

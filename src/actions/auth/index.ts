@@ -2,11 +2,11 @@
 
 import { client } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
-import { onGetAllAccountDomains } from "../settings";
 import { redirect } from "next/navigation";
 
 export const onCompleteUserRegistration = async (
   fullname: string,
+  email: string,
   clerkId: string,
   type: string
 ) => {
@@ -14,14 +14,13 @@ export const onCompleteUserRegistration = async (
     const registered = await client.user.create({
       data: {
         fullname,
+        email,
         clerkId,
         type,
-        subscription: {
-          create: {},
-        },
       },
       select: {
         fullname: true,
+        email: true,
         id: true,
         type: true,
       },
@@ -51,8 +50,7 @@ export const onLoginUser = async () => {
         },
       });
       if (authenticated) {
-        const domains = await onGetAllAccountDomains();
-        return { status: 200, user: authenticated, domain: domains?.domains };
+        return { status: 200, user: authenticated };
       }
     } catch (error) {
       return { status: 400 };

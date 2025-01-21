@@ -1,13 +1,12 @@
-import React from 'react'
+import React from "react";
 
 type MenuLogoProps = {
-  onClick(): void
-}
+  onClick(): void;
+};
 
-export const MenuLogo = ({ onClick }: MenuLogoProps) => {
+export const MenuLogo = () => {
   return (
     <svg
-      onClick={onClick}
       width="30"
       height="30"
       viewBox="0 0 110 110"
@@ -34,5 +33,5 @@ export const MenuLogo = ({ onClick }: MenuLogoProps) => {
         stroke-linecap="round"
       />
     </svg>
-  )
-}
+  );
+};

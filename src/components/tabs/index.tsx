@@ -15,11 +15,11 @@ type Props = {
 const TabsMenu = ({ triggers, children, className, button }: Props) => {
   return (
     <Tabs
-      defaultValue={triggers[0].label}
+      defaultValue={triggers?.[0].label}
       className="w-full"
     >
       <TabsList className={cn('pr-5', className)}>
-        {triggers.map((trigger, key) => (
+        { triggers && triggers.map((trigger, key) => (
           <TabsTrigger
             key={key}
             value={trigger.label}

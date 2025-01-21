@@ -1,150 +1,61 @@
-'use server'
+"use server";
 
-import { client } from '@/lib/prisma'
-import { currentUser } from '@clerk/nextjs/server'
+import { client } from "@/lib/prisma";
 
-const stripe = ""
-
-export const getUserClients = async () => {
+export const getTotalLeads = async () => {
   try {
-    const user = await currentUser()
-    if (user) {
-      const clients = await client.customer.count({
-        where: {
-          Domain: {
-            User: {
-              clerkId: user.id,
-            },
+    const leadsCount = await client.prospect.count({
+      where: { stage: "BOOKED" },
+    });
+    return { status: 200, data: leadsCount };
+  } catch (error) {
+    return { status: 500, error: "Error fetching leads count" };
+  }
+};
+
+export const getConversionRate = async () => {
+  try {
+    const passedCount = await client.conversation.count({
+      where: { result: "PASSED" },
+    });
+
+    const totalCount = await client.conversation.count();
+
+    const conversionRate = totalCount
+      ? Math.round((passedCount / totalCount) * 100)
+      : 0;
+
+    return {
+      status: 200,
+      data: {
+        conversionRate,
+      },
+    };
+  } catch (error) {
+    return { status: 500, error: "Error fetching conversion rate" };
+  }
+};
+
+export const getCoversationsOverview = async () => {
+  try {
+    const conversations = await client.conversation.findMany({
+      select: {
+        id: true,
+        prospect: {
+          select: {
+            name: true,
           },
         },
-      })
-      if (clients) {
-        return clients
-      }
-    }
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    return { status: 200, data: conversations };
   } catch (error) {
-    console.log(error)
+    return { status: 500, error: "Error fetching conversations" };
   }
-}
+};
 
-export const getUserBalance = async () => {
-  try {
-    const user = await currentUser()
-    if (user) {
-      const connectedStripe = await client.user.findUnique({
-        where: {
-          clerkId: user.id,
-        },
-        select: {
-          stripeId: true,
-        },
-      })
-
-      if (connectedStripe) {
-        const transactions = undefined
-
-        if (transactions) {
-          const sales = transactions.pending.reduce((total, next) => {
-            return total + next.amount
-          }, 0)
-
-          return sales / 100
-        }
-      }
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-export const getUserPlanInfo = async () => {
-  try {
-    const user = await currentUser()
-    if (user) {
-      const plan = await client.user.findUnique({
-        where: {
-          clerkId: user.id,
-        },
-        select: {
-          _count: {
-            select: {
-              domains: true,
-            },
-          },
-          subscription: {
-            select: {
-              plan: true,
-              credits: true,
-            },
-          },
-        },
-      })
-      if (plan) {
-        return {
-          plan: plan.subscription?.plan,
-          credits: plan.subscription?.credits,
-          domains: plan._count.domains,
-        }
-      }
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-export const getUserTotalProductPrices = async () => {
-  try {
-    const user = await currentUser()
-    if (user) {
-      const products = await client.product.findMany({
-        where: {
-          Domain: {
-            User: {
-              clerkId: user.id,
-            },
-          },
-        },
-        select: {
-          price: true,
-        },
-      })
-
-      if (products) {
-        const total = products.reduce((total:any, next:any) => {
-          return total + next.price
-        }, 0)
-
-        return total
-      }
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-export const getUserTransactions = async () => {
-  try {
-    const user = await currentUser()
-    if (user) {
-      const connectedStripe = await client.user.findUnique({
-        where: {
-          clerkId: user.id,
-        },
-        select: {
-          stripeId: true,
-        },
-      })
-
-      if (connectedStripe) {
-        // const transactions = await stripe.charges.list({
-        //   stripeAccount: connectedStripe.stripeId!,
-        // })
-        // if (transactions) {
-        //   return transactions
-        // }
-      }
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}

@@ -1,7 +1,7 @@
 'use client'
 import { useConversation } from '@/hooks/conversation/use-conversation'
 import React from 'react'
-import TabsMenu from '../tabs/intex'
+import TabsMenu from '../tabs'
 import { TABS_MENU } from '@/constants/menu'
 import { TabsContent } from '../ui/tabs'
 import ConversationSearch from './search'
