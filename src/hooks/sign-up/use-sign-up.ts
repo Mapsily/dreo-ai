@@ -59,7 +59,11 @@ export const useSignUpForm = () => {
         });
 
         if (completeSignUp.status !== "complete") {
-          return { message: "Something went wrong!" };
+          setLoading(false)
+          toast({
+            title: "Error",
+            description: "Something went wrong!",
+          });
         }
 
         if (completeSignUp.status == "complete") {
@@ -67,8 +71,8 @@ export const useSignUpForm = () => {
 
           const registered = await onCompleteUserRegistration(
             values.fullname,
-            signUp.createdUserId,
-            values.type
+            values.email,
+            signUp.createdUserId
           );
 
           if (registered?.status == 200 && registered.user) {

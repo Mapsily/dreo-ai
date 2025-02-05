@@ -22,6 +22,9 @@ export default {
           DEFAULT: "#0d0d0d",
           foreground: "#000000",
         },
+        accent: {
+          DEFAULT: "f9fafb",
+        },
       },
       keyframes: {
         "accordion-down": {

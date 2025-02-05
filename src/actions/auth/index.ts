@@ -5,24 +5,21 @@ import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 export const onCompleteUserRegistration = async (
-  fullname: string,
+  name: string,
   email: string,
-  clerkId: string,
-  type: string
+  clerkId: string
 ) => {
   try {
     const registered = await client.user.create({
       data: {
-        fullname,
+        name,
         email,
         clerkId,
-        type,
       },
       select: {
-        fullname: true,
+        name: true,
         email: true,
         id: true,
-        type: true,
       },
     });
 
@@ -34,9 +31,9 @@ export const onCompleteUserRegistration = async (
   }
 };
 
-export const onLoginUser = async () => {
+export const getUser = async () => {
   const user = await currentUser();
-  if (!user) redirect("/auth/sign-in");
+  if (!user) return { status: 404, user: null };
   else {
     try {
       const authenticated = await client.user.findUnique({
@@ -44,16 +41,13 @@ export const onLoginUser = async () => {
           clerkId: user.id,
         },
         select: {
-          fullname: true,
+          name: true,
           id: true,
-          type: true,
         },
       });
-      if (authenticated) {
-        return { status: 200, user: authenticated };
-      }
+      return { status: 200, user: authenticated };
     } catch (error) {
-      return { status: 400 };
+      return { status: 400, user: null };
     }
   }
 };

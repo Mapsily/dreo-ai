@@ -15,7 +15,7 @@ const BreadCrumb = () => {
       <p className="text-gray-500 text-sm">
         {page == "settings"
           ? "Manage your account settings, preferences and integrations"
-          : page == "dashboard"
+          : page == "analytics"
           ? "A detailed overview of your metrics, usage, customers and more"
           : page == "appointment"
           ? "View and edit all your appointments"

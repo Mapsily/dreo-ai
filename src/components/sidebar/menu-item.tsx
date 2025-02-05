@@ -16,11 +16,11 @@ const MenuItem = ({ path, icon, current, onSignOut, className }: Props) => {
     <Link
       onClick={onSignOut}
       className={cn(
-        "rounded-full p-3",
-        current == path ? "bg-primary text-black" : "text-white",
+        "p-2 rounded-md hover:text-black",
+        current == path ? "bg-primary" : "text-gray-600",
         className
       )}
-      href={path ? `/${path}` : "#"}
+      href={path ? `/dashboard/${path}` : "#"}
     >
       {icon}
     </Link>

@@ -1,12 +1,11 @@
 import React from "react";
 import BreadCrumb from "./bread-crumb";
-import { UserButton } from "@clerk/nextjs";
 
-const InfoBar = () => {
+const InfoBar = ({ Actions }: { Actions?: React.ReactNode }) => {
   return (
-    <div className="flex w-full justify-between items-center py-1 mb-8 ">
+    <div className="flex justify-between items-center mb-8">
       <BreadCrumb />
-      <UserButton />
+      {Actions && <div className="flex gap-6">{Actions}</div>}
     </div>
   );
 };

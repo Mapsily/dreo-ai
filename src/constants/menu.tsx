@@ -20,9 +20,9 @@ type SIDE_BAR_MENU_PROPS = {
 
 export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
   {
-    label: "Dashboard",
+    label: "Analytics",
     icon: <ChartLineIcon />,
-    path: "dashboard",
+    path: "analytics",
   },
   {
     label: "Prospects",
@@ -32,7 +32,7 @@ export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
   {
     label: "Products",
     icon: <Box />,
-    path: "product",
+    path: "products",
   },
   {
     label: "Conversations",

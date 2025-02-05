@@ -13,7 +13,7 @@ export const InputContainer = ({
 }: Props) => {
   return (
     <div
-      className={`bg-black p-8 rounded-2xl w-[70%] flex  ${
+      className={`bg-white p-8 rounded-2xl w-[70%] flex  ${
         direction === "horizontal" ? "flex-col gap-8" : "gap-16 justify-between items-center"
       }`}
     >

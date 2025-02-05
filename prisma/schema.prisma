@@ -7,6 +7,124 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String
+  email        String        @unique
+  clerkId      String        @unique
+  phoneNumber  Int?                   
+  companyName  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  products     Product[]
+  propspects   Prospect[]
+  setting      Setting?
+  subscription Subscription?
+}
+
+model Prospect {
+  id               String           @id @default(uuid())
+  name             String
+  phone            String
+  notes            String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  userId           String           @db.Uuid
+  lastContacted    DateTime?
+  rescheduledCount Int?             @default(0)
+  rescheduledFor   DateTime?
+  status           PROSPECT_STATUS? @default(INITIAL)
+  appointments     Appointment[]
+  conversations    Conversation[]
+  user             User             @relation(fields: [userId], references: [id])
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Appointment {
+  id         String   @id @default(uuid())
+  prospectId String
+  date       DateTime
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  prospect   Prospect @relation(fields: [prospectId], references: [id])
+}
+
+model Conversation {
+  id         String              @id @default(uuid())
+  prospectId String
+  transcript String
+  audioUrl   String
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  result     CONVERSATION_RESULT
+  status     CONVERSATION_STATUS @default(INPROGRESS)
+  prospect   Prospect            @relation(fields: [prospectId], references: [id])
+}
+
+model Subscription {
+  id        String      @id @default(uuid())
+  userId    String      @unique @db.Uuid
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  plan      PLAN
+  status    PLAN_STATUS
+  user      User        @relation(fields: [userId], references: [id])
+}
+
+model Setting {
+  userId         String          @unique @db.Uuid
+  theme          THEME
+  updatedAt      DateTime        @updatedAt
+  id             String          @id @default(uuid()) @db.Uuid
+  advanceSetting AdvanceSetting?
+  agentSetting   AgentSetting?
+  scriptSetting  ScriptSetting?
+  user           User            @relation(fields: [userId], references: [id])
+}
+
+model AgentSetting {
+  id            String   @id @default(uuid())
+  settingId     String   @unique @db.Uuid
+  language      LANGUAGE @default(HINDI)
+  firstMessage  String
+  knowledgeBase String
+  voice         VOICE    @default(ERIC)
+  updatedAt     DateTime @updatedAt
+  setting       Setting  @relation(fields: [settingId], references: [id])
+}
+
+model ScriptSetting {
+  id            String   @id @default(uuid())
+  settingId     String   @unique @db.Uuid
+  prospecting   String
+  qualification String
+  appointment   String
+  updatedAt     DateTime @updatedAt
+  setting       Setting  @relation(fields: [settingId], references: [id])
+}
+
+model AdvanceSetting {
+  id                    String   @id @default(uuid())
+  settingId             String   @unique @db.Uuid
+  maxConnectionDuration Int
+  keywords              String[]
+  startAt               DateTime
+  endAt                 DateTime
+  updatedAt             DateTime @updatedAt
+  setting               Setting  @relation(fields: [settingId], references: [id])
+}
+
 enum PLAN {
   FREE
   PRO
@@ -21,12 +139,26 @@ enum PLAN_STATUS {
 enum CONVERSATION_RESULT {
   PASSED
   FAILED
+  FOLLOWUP
+}
+
+enum CONVERSATION_STATUS {
+  INPROGRESS
+  COMPLETED
 }
 
 enum PROSPECT_STATUS {
   INITIAL
   FOLLOWUP
   BOOKED
+  NOTRESPONDED
+  FAILED
+}
+
+enum PROSPECT_INTEREST {
+  LOW
+  MEDIUM
+  HIGH
 }
 
 enum LANGUAGE {
@@ -42,120 +174,4 @@ enum THEME {
   DARK
   LIGHT
   SYSTEM
-}
-
-model User {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  fullname  String
-  email     String   @unique
-  clerkId   String   @unique
-  type      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  propspects   Prospect[]
-  products     Product[]
-  subscription Subscription?
-  setting      Setting?
-}
-
-model Prospect {
-  id        String          @id @default(uuid())
-  name      String
-  email     String
-  phone     String
-  notes     String?
-  stage     PROSPECT_STATUS @default(INITIAL)
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  userId    String          @db.Uuid
-  user      User            @relation(fields: [userId], references: [id])
-
-  appointments  Appointment[]
-  conversations Conversation[]
-}
-
-model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  price       Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String   @db.Uuid
-  user        User     @relation(fields: [userId], references: [id])
-}
-
-model Appointment {
-  id         String   @id @default(uuid())
-  prospectId String
-  prospect   Prospect @relation(fields: [prospectId], references: [id])
-  date       DateTime
-  notes      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-
-model Conversation {
-  id         String              @id @default(uuid())
-  prospectId String
-  prospect   Prospect            @relation(fields: [prospectId], references: [id])
-  transcript String
-  audioUrl   String
-  result     CONVERSATION_RESULT
-  createdAt  DateTime            @default(now())
-  updatedAt  DateTime            @updatedAt
-}
-
-model Subscription {
-  id        String      @id @default(uuid())
-  userId    String      @unique @db.Uuid
-  user      User        @relation(fields: [userId], references: [id])
-  plan      PLAN
-  status    PLAN_STATUS
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-}
-
-model Setting {
-  id             String          @id @default(uuid()) @db.Uuid
-  userId         String          @unique @db.Uuid
-  user           User            @relation(fields: [userId], references: [id])
-  theme          THEME
-  updatedAt      DateTime        @updatedAt
-  agentSetting   AgentSetting?
-  scriptSetting  ScriptSetting?
-  advanceSetting AdvanceSetting?
-}
-
-model AgentSetting {
-  id            String   @id @default(uuid())
-  settingId     String   @unique @db.Uuid
-  setting       Setting  @relation(fields: [settingId], references: [id])
-  language      LANGUAGE @default(HINDI)
-  firstMessage  String
-  knowledgeBase String
-  voice         VOICE    @default(ERIC)
-  updatedAt     DateTime @updatedAt
-}
-
-model ScriptSetting {
-  id            String   @id @default(uuid())
-  settingId     String   @unique @db.Uuid
-  setting       Setting  @relation(fields: [settingId], references: [id])
-  prospecting   String
-  qualification String
-  appointment   String
-  updatedAt     DateTime @updatedAt
-}
-
-model AdvanceSetting {
-  id                    String   @id @default(uuid())
-  settingId             String   @unique @db.Uuid
-  setting               Setting  @relation(fields: [settingId], references: [id])
-  maxConnectionDuration Int
-  keywords              String[]
-  startAt               DateTime
-  endAt                 DateTime
-  updatedAt             DateTime @updatedAt
 }
