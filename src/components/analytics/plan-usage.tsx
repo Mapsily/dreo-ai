@@ -1,5 +1,5 @@
 import React from "react";
-import { ProgressBar } from "../progress";
+import { ProgressBar } from "../credit-progress";
 
 type PlanUsageProps = {
   plan: "FREE" | "PRO" | "ULTIMATE";

@@ -6,8 +6,8 @@ import UserProfile from "./user-profile";
 
 function DashboardNavBar() {
   return (
-    <div className="bg-white px-4 text-gray-800 flex items-center justify-between border-b">
-      <Image src="/images/logo.png" alt="" width={140} height={140} />
+    <div className="h-20 bg-white px-4 text-gray-800 flex items-center justify-between border-b">
+      <Image src="/images/logo.png" alt="corena-logo" width={140} height={140} />
       <div className="flex items-center gap-4">
         <ThemeSwitch />
         <Link href="">

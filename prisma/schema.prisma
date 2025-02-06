@@ -12,7 +12,7 @@ model User {
   name         String
   email        String        @unique
   clerkId      String        @unique
-  phoneNumber  Int?                   
+  phoneNumber  Int?
   companyName  String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -51,25 +51,30 @@ model Product {
 }
 
 model Appointment {
-  id         String   @id @default(uuid())
-  prospectId String
-  date       DateTime
-  notes      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  prospect   Prospect @relation(fields: [prospectId], references: [id])
+  id               String         @id @default(uuid())
+  scheduledFor     DateTime
+  productsInterest String[]
+  interestLevel    INTEREST_LEVEL @default(LOW)
+  notes            String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  prospectId       String
+  prospect         Prospect       @relation(fields: [prospectId], references: [id])
 }
 
 model Conversation {
-  id         String              @id @default(uuid())
-  prospectId String
-  transcript String
-  audioUrl   String
-  createdAt  DateTime            @default(now())
-  updatedAt  DateTime            @updatedAt
-  result     CONVERSATION_RESULT
-  status     CONVERSATION_STATUS @default(INPROGRESS)
-  prospect   Prospect            @relation(fields: [prospectId], references: [id])
+  id           String              @id @default(uuid())
+  transcript   String
+  recordingUrl String
+  callStartAt  DateTime
+  callEndAt    DateTime
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  notes        String
+  result       CONVERSATION_RESULT
+  status       CONVERSATION_STATUS @default(INPROGRESS)
+  prospectId   String
+  prospect     Prospect            @relation(fields: [prospectId], references: [id])
 }
 
 model Subscription {
@@ -96,37 +101,37 @@ model Setting {
 model AgentSetting {
   id            String   @id @default(uuid())
   settingId     String   @unique @db.Uuid
-  language      LANGUAGE @default(HINDI)
+  language      String
   firstMessage  String
   knowledgeBase String
-  voice         VOICE    @default(ERIC)
+  voice         String
   updatedAt     DateTime @updatedAt
   setting       Setting  @relation(fields: [settingId], references: [id])
 }
 
 model ScriptSetting {
-  id            String   @id @default(uuid())
-  settingId     String   @unique @db.Uuid
-  prospecting   String
-  qualification String
-  appointment   String
-  updatedAt     DateTime @updatedAt
-  setting       Setting  @relation(fields: [settingId], references: [id])
+  id        String   @id @default(uuid())
+  settingId String   @unique @db.Uuid
+  initial   String
+  followUp  String
+  updatedAt DateTime @updatedAt
+  setting   Setting  @relation(fields: [settingId], references: [id])
 }
 
 model AdvanceSetting {
-  id                    String   @id @default(uuid())
-  settingId             String   @unique @db.Uuid
-  maxConnectionDuration Int
-  keywords              String[]
-  startAt               DateTime
-  endAt                 DateTime
-  updatedAt             DateTime @updatedAt
-  setting               Setting  @relation(fields: [settingId], references: [id])
+  id              String   @id @default(uuid())
+  settingId       String   @unique @db.Uuid
+  maxCallDuration Int
+  keywords        String[]
+  timeZone        String
+  startAt         DateTime
+  endAt           DateTime
+  updatedAt       DateTime @updatedAt
+  setting         Setting  @relation(fields: [settingId], references: [id])
 }
 
 enum PLAN {
-  FREE
+  BASIC
   PRO
   ULTIMATE
 }
@@ -139,7 +144,8 @@ enum PLAN_STATUS {
 enum CONVERSATION_RESULT {
   PASSED
   FAILED
-  FOLLOWUP
+  RESCHEDULED
+  NOTRESPONDED
 }
 
 enum CONVERSATION_STATUS {
@@ -149,29 +155,19 @@ enum CONVERSATION_STATUS {
 
 enum PROSPECT_STATUS {
   INITIAL
-  FOLLOWUP
+  RESCHEDULED
   BOOKED
   NOTRESPONDED
   FAILED
 }
 
-enum PROSPECT_INTEREST {
+enum INTEREST_LEVEL {
   LOW
   MEDIUM
   HIGH
 }
 
-enum LANGUAGE {
-  HINDI
-  ENGLISH
-}
-
-enum VOICE {
-  ERIC
-}
-
 enum THEME {
-  DARK
   LIGHT
-  SYSTEM
+  DARK
 }

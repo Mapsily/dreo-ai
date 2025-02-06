@@ -11,19 +11,24 @@ export const SettingTabs = () => {
   const current = pathname.split("/").pop();
 
   return (
-    <nav className="flex flex-col gap-4">
-      {SETTINGS_TABS.map((tab) => (
-        <Link
-          key={tab.label}
-          href={`/dashboard/settings/${tab.path}`}
-          className={clsx(
-            "bg-white flex items-center gap-4 px-4 py-4 text-sm rounded-md border hover:bg-gray-50",
-            current === tab.path ? "bg-primary text-black" : "text-black"
-          )}
-        >
-          {tab.icon} {tab.label}
-        </Link>
-      ))}
-    </nav>
+    <div>
+      <h3 className="font-bold text-3xl mb-8">Settings</h3>
+      <nav className="flex flex-col gap-4">
+        {SETTINGS_TABS.map((tab) => (
+          <Link
+            key={tab.label}
+            href={`/dashboard/settings/${tab.path}`}
+            className={clsx(
+              "flex items-center gap-4 px-4 pr-28 py-2 rounded-md text-sm",
+              current === tab.path
+                ? "bg-gray-200 text-black"
+                : "text-black hover:bg-gray-100"
+            )}
+          >
+            {tab.icon} {tab.label}
+          </Link>
+        ))}
+      </nav>
+    </div>
   );
 };

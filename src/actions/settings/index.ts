@@ -42,6 +42,42 @@ export const onGetAdvanceSettings = async () => {
   }
 };
 
+export const getAccountSetting = async () => {
+  try {
+    const user = await currentUser();
+    const res = await client.user.findFirst({
+      where: {
+        clerkId: user?.id,
+      },
+    });
+    return { status: 200, data: res };
+  } catch (error) {
+    return { status: 500, message: "Server Error!" };
+  }
+};
+
+export const onUpdateAccountSettings = async (
+  settings: Prisma.UserUpdateInput
+) => {
+  try {
+    const user = await currentUser();
+    if (!user) return null;
+
+    await client.user.update({
+      where: {
+        clerkId: user.id,
+      },
+      data: {
+        ...settings,
+      },
+    });
+
+    return { status: 200, message: "Advance settings updated" };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const onUpdateAdvanceSettings = async (
   settings: Prisma.AdvanceSettingUpdateInput
 ) => {
@@ -90,7 +126,6 @@ export const onGetScriptSettings = async () => {
   }
 };
 
-
 export const onUpdateScriptSettings = async (
   settings: Prisma.ScriptSettingUpdateInput
 ) => {
@@ -138,8 +173,6 @@ export const onGetAgentSettings = async () => {
     console.log(error);
   }
 };
-
-
 
 export const onUpdateAgentSettings = async (
   settings: Prisma.AgentSettingUpdateInput

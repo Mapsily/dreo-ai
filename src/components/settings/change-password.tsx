@@ -1,43 +1,34 @@
 "use client";
 import { useChangePassword } from "@/hooks/settings/use-settings";
 import React from "react";
-import Section from "../section-label";
+
 import FormGenerator from "../forms/form-generator";
 import { Button } from "../ui/button";
 import { Loader } from "../loader";
 
 const ChangePassword = () => {
-  const { register, errors, onChangePassword, loading } = useChangePassword();
+  const { register, errors, onChangePassword, loading, isDirty } =
+    useChangePassword();
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
-      <div className="lg:col-span-1">
-        <Section label="Change Password" message="Reset your password" />
-      </div>
-      <form onSubmit={onChangePassword} className="lg:col-span-4">
-        <div className="lg:w-[500px] flex flex-col gap-3">
-          <FormGenerator
-            register={register}
-            errors={errors}
-            name="password"
-            placeholder="New Password"
-            type="text"
-            inputType="input"
-          />
-          <FormGenerator
-            register={register}
-            errors={errors}
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            type="text"
-            inputType="input"
-          />
-          <Button>
-            <Loader loading={loading}>Change Password</Loader>
-          </Button>
-        </div>
-      </form>
-    </div>
+    <form onSubmit={onChangePassword} className="relative">
+      <Button
+        disabled={!isDirty}
+        variant="link"
+        className="absolute right-0 -top-3 p-0"
+      >
+        <Loader loading={loading}>Change Password</Loader>
+      </Button>
+      <FormGenerator
+        register={register}
+        errors={errors}
+        name="confirmPassword"
+        placeholder="Enter new password"
+        type="password"
+        inputType="input"
+        label="Password"
+      />
+    </form>
   );
 };
 

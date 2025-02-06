@@ -42,7 +42,7 @@ export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
   {
     label: "Appointments",
     icon: <Calendar />,
-    path: "appointment",
+    path: "appointments",
   },
   {
     label: "Settings",

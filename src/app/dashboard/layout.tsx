@@ -15,7 +15,7 @@ const DashboardLayout = async ({ children }: Props) => {
   return (
     <div className="h-screen w-full bg-gray-50">
       <DashboardNavBar />
-      <div className="flex">
+      <div className="flex h-[calc(100%-5rem)]">
         <SideBar />
         <section className="flex flex-col w-full p-8 overflow-y-auto">
           {children}
