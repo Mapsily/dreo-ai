@@ -1,28 +1,35 @@
 "use server";
 
 import { client } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
 
-export const getConversations = async () => {
-  return await client.conversation.findMany();
-};
-
-// create
-export const createConversation = async (
-  data: Prisma.ConversationCreateInput
-) => {
-  return await client.conversation.create({
-    data,
-  });
-};
-
-// update
-export const updateConversation = async (
-  where: Prisma.ConversationWhereUniqueInput,
-  data: Prisma.ConversationUpdateInput
-) => {
-  return await client.conversation.update({
-    where,
-    data,
-  });
+export const getConversations = async (clerkId: string) => {
+  try {
+    const conversations = await client.conversation.findMany({
+      where: {
+        prospect: {
+          user: {
+            clerkId,
+          },
+        },
+      },
+      select: {
+        prospect: {
+          select: {
+            name: true,
+            phone: true,
+          },
+        },
+        id: true,
+        createdAt: true,
+        callEndAt: true,
+        callStartAt: true,
+        recordingUrl: true,
+        transcript: true,
+        notes: true,
+      },
+    });
+    return { status: 200, data: conversations };
+  } catch (error) {
+    return { status: 500, message: "Server Error" };
+  }
 };

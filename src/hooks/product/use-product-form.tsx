@@ -14,6 +14,7 @@ export const useProductForm = () => {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
     reset,
   } = useForm<Prisma.ProductCreateInput>({
     resolver: zodResolver(ProductInputSchema),
@@ -34,8 +35,12 @@ export const useProductForm = () => {
       if (res.status === 200) {
         reset();
         toast({ title: "Success", description: res.message });
-      }else {
-        toast({ title: "Error", description: res.message });
+      } else {
+        toast({
+          title: "Error",
+          description: res.message,
+          variant: "destructive",
+        });
       }
       setLoading(false);
     } catch (error) {
@@ -48,5 +53,6 @@ export const useProductForm = () => {
     errors,
     onAdd,
     loading,
+    getValues,
   };
 };

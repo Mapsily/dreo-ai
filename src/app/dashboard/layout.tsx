@@ -1,23 +1,18 @@
 import React from "react";
-import SideBar from "@/components/sidebar";
-import { currentUser } from "@clerk/nextjs/server";
-import DashboardNavBar from "@/components/dashboard-navbar";
-import { redirect } from "next/navigation";
+import SideBar from "@/components/shared/sidebar";
+import NavBar from "@/components/shared/navbar";
 
 type Props = {
   children: React.ReactNode;
 };
 
 const DashboardLayout = async ({ children }: Props) => {
-  const authenticated = await currentUser();
-  if (!authenticated) return redirect("/");
-
   return (
     <div className="h-screen w-full bg-gray-50">
-      <DashboardNavBar />
+      <NavBar />
       <div className="flex h-[calc(100%-5rem)]">
         <SideBar />
-        <section className="flex flex-col w-full p-8 overflow-y-auto">
+        <section className="flex flex-col w-full overflow-y-auto">
           {children}
         </section>
       </div>

@@ -1,4 +1,4 @@
-import { Calendar, MessageCircle } from "lucide-react";
+import { Calendar } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -6,8 +6,26 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { Prisma } from "@prisma/client";
+import NoItemsLayout from "../shared/no-items-layout.tsx";
 
-const AppointmentOverview = () => {
+export type Appointment = Prisma.AppointmentGetPayload<{
+  select: {
+    scheduledFor: true;
+    notes: true;
+    prospect: {
+      select: {
+        name: true;
+      };
+    };
+  };
+}>;
+
+const AppointmentOverview = ({
+  appointments = [],
+}: {
+  appointments: Appointment[];
+}) => {
   return (
     <Card className="col-span-2">
       <CardHeader className="pb-0">
@@ -19,7 +37,24 @@ const AppointmentOverview = () => {
           your appointments for today
         </CardDescription>
       </CardHeader>
-      <CardContent className="py-4"></CardContent>
+      <CardContent className="py-4">
+        {appointments.map((c) => (
+          <div className="bg-black/20 flex justify-between items-center">
+            <div>
+              <h3 className="font-medium">{c.prospect.name}</h3>
+              <span>{c.notes}</span>
+            </div>
+            <p className="text-right">{c.scheduledFor.toDateString()}</p>
+          </div>
+        ))}
+        {!appointments.length && (
+          <NoItemsLayout
+            description="Start an outreach and Let the AI book appointments for you!"
+            imageUrl="/images/no-appointments.png"
+            title="Your scheduled meetings will appear here. "
+          />
+        )}
+      </CardContent>
     </Card>
   );
 };

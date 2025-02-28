@@ -10,9 +10,9 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 
 type Props = {
   title: string;
-  value: number;
+  value: number | string;
   icon: JSX.Element;
-  direction: "UP" | "DOWN";
+  direction: "UP" | "DOWN" | "DEFAULT";
   percentage: number;
 };
 
@@ -36,11 +36,17 @@ const DashboardCard = ({
         <p className="flex items-center gap-2 text-sm text-gray-500">
           <span
             className={`flex items-center gap-1 ${
-              direction === "UP" ? "text-green-600" : "text-red-600"
+              direction === "DEFAULT"
+                ? ""
+                : direction === "UP"
+                ? "text-green-600"
+                : "text-red-600"
             }`}
           >
             {percentage}%{" "}
-            {direction === "UP" ? (
+            {direction === "DEFAULT" ? (
+              <> </>
+            ) : direction === "UP" ? (
               <TrendingUp size={16} />
             ) : (
               <TrendingDown size={16} />

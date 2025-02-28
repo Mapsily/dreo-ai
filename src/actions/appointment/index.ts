@@ -1,26 +1,36 @@
 "use server";
 
 import { client } from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs/server";
 
-export const getUserAppointments = async () => {
+export const getAppointments = async (clerkId: string) => {
   try {
-    const user = await currentUser();
-    if (user) {
-      const bookings = await client.appointment.count({
-        where: {
-          prospect: {
-            user: {
-              clerkId: user.id,
-            },
+    const bookings = await client.appointment.findMany({
+      where: {
+        prospect: {
+          user: {
+            clerkId,
           },
         },
-      });
-
-      return { status: 200, data: bookings };
-    }
+      },
+      include: {
+        prospect: true,
+      },
+    });
+    return { status: 200, data: bookings };
   } catch (error) {
-    console.log(error);
     return { status: 500, message: "Error fetching appoinments" };
+  }
+};
+
+export const deleteAppointment = async (appointmentId: string) => {
+  try {
+    const bookings = await client.appointment.delete({
+      where: {
+        id: appointmentId,
+      },
+    });
+    return { status: 200, message: "Appointment deleted" };
+  } catch (error) {
+    return { status: 500, message: "Server Error" };
   }
 };

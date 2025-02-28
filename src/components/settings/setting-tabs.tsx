@@ -14,18 +14,19 @@ export const SettingTabs = () => {
     <div>
       <h3 className="font-bold text-3xl mb-8">Settings</h3>
       <nav className="flex flex-col gap-4">
-        {SETTINGS_TABS.map((tab) => (
+        {SETTINGS_TABS.map(({ icon: Icon, label, path }) => (
           <Link
-            key={tab.label}
-            href={`/dashboard/settings/${tab.path}`}
+            key={label}
+            href={`/dashboard/settings/${path}`}
             className={clsx(
               "flex items-center gap-4 px-4 pr-28 py-2 rounded-md text-sm",
-              current === tab.path
-                ? "bg-gray-200 text-black"
-                : "text-black hover:bg-gray-100"
+              current === path
+                ? "bg-black/5 text-black"
+                : "text-black hover:bg-black/5"
             )}
           >
-            {tab.icon} {tab.label}
+            <Icon />
+            {label}
           </Link>
         ))}
       </nav>

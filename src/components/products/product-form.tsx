@@ -2,7 +2,7 @@
 
 import { Button } from "../ui/button";
 import { useProductForm } from "@/hooks/product/use-product-form";
-import FormGenerator from "@/components/forms/form-generator";
+import FormGenerator from "@/components/shared/form-generator";
 
 export default function ProspectForm() {
   const { errors, register, onAdd, loading } = useProductForm();

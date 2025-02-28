@@ -1,9 +1,5 @@
-import NavBar from "@/components/navbar";
+import { redirect } from "next/navigation";
 
-export default async function Home() {
-  return (
-    <main>
-      <NavBar />
-    </main>
-  );
+export default function Root() {
+  redirect("/dashboard/analytics");
 }

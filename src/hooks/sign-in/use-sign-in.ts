@@ -1,4 +1,4 @@
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { UserLoginProps, UserLoginSchema } from "@/schemas/auth.schema";
 import { useSignIn } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,9 +47,26 @@ export const useSignInForm = () => {
     }
   );
 
+  const onGoogleAuth = async () => {
+    if (!isLoaded) return;
+    try {
+      await signIn.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/dashboard",
+        redirectUrlComplete: "/dashboard/analytics",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+      });
+    }
+  };
+
   return {
     methods,
     onHandleSubmit,
     loading,
+    onGoogleAuth
   };
 };

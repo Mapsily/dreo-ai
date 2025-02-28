@@ -1,5 +1,5 @@
 "use client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   UserRegistrationProps,
   UserRegistrationSchema,
@@ -18,11 +18,24 @@ export const useSignUpForm = () => {
   const router = useRouter();
   const methods = useForm<UserRegistrationProps>({
     resolver: zodResolver(UserRegistrationSchema),
-    defaultValues: {
-      type: "owner",
-    },
     mode: "onChange",
   });
+
+  const onGoogleAuth = async () => {
+    if (!isLoaded) return;
+    try {
+      await signUp.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/dashboard",
+        redirectUrlComplete: "/dashboard/analytics",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+      });
+    }
+  };
 
   const onGenerateOTP = async (
     email: string,
@@ -31,25 +44,26 @@ export const useSignUpForm = () => {
   ) => {
     if (!isLoaded) return;
     try {
+      setLoading(true);
       await signUp.create({
         emailAddress: email,
         password: password,
       });
-
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-
       onNext((prev) => prev + 1);
     } catch (error: any) {
-      console.log(error.errors, "runnn");
       toast({
         title: "Error",
         description: error.errors[0].longMessage,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const onHandleSubmit = methods.handleSubmit(
     async (values: UserRegistrationProps) => {
+
       if (!isLoaded) return;
 
       try {
@@ -59,7 +73,7 @@ export const useSignUpForm = () => {
         });
 
         if (completeSignUp.status !== "complete") {
-          setLoading(false)
+          setLoading(false);
           toast({
             title: "Error",
             description: "Something went wrong!",
@@ -70,25 +84,27 @@ export const useSignUpForm = () => {
           if (!signUp.createdUserId) return;
 
           const registered = await onCompleteUserRegistration(
-            values.fullname,
+            values.firstName,
+            values.lastName,
             values.email,
             signUp.createdUserId
           );
 
-          if (registered?.status == 200 && registered.user) {
+          if (registered?.status == 200) {
             await setActive({
               session: completeSignUp.createdSessionId,
             });
 
             setLoading(false);
-            router.push("/dashboard");
+            router.push("/success");
           }
 
           if (registered?.status == 400) {
             toast({
               title: "Error",
-              description: "Something went wrong!",
+              description: registered.message,
             });
+            setLoading(false);
           }
         }
       } catch (error: any) {
@@ -104,5 +120,6 @@ export const useSignUpForm = () => {
     onHandleSubmit,
     onGenerateOTP,
     loading,
+    onGoogleAuth,
   };
 };

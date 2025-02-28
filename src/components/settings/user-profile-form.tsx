@@ -1,23 +1,21 @@
 "use client";
 
-import { useAccountSetting } from "@/hooks/settings/use-settings";
-import FormGenerator from "../forms/form-generator";
+import { useAccountSettings } from "@/hooks/setting/use-setting";
+import FormGenerator from "@/components/shared/form-generator";
 import Header from "./header";
 import { User } from "@prisma/client";
 
-export default function UserProfileForm({ user }: { user?: User | null }) {
-  const {
-    errors,
-    control,
-    isDirty,
-    loading,
-    onChangeAccountSetting,
-    register,
-  } = useAccountSetting();
+export default function UserProfileForm({
+  defaultValues,
+}: {
+  defaultValues?: User | null;
+}) {
+  const { errors, isDirty, loading, onUpdate, register } =
+    useAccountSettings(defaultValues);
 
   return (
-    <form className="space-y-4">
-      <Header heading="ACCOUNT" disabled={!isDirty} />
+    <form className="space-y-4" onSubmit={onUpdate}>
+      <Header heading="ACCOUNT" disabled={!isDirty} loading={loading} />
       <fieldset className="space-y-8 w-full">
         <FormGenerator
           errors={errors}
@@ -25,7 +23,6 @@ export default function UserProfileForm({ user }: { user?: User | null }) {
           inputType="input"
           name="name"
           placeholder="Enter name"
-          defaultValue={user?.name}
           type="text"
           label="Name"
         />
@@ -35,7 +32,6 @@ export default function UserProfileForm({ user }: { user?: User | null }) {
           inputType="input"
           name="email"
           placeholder="Enter email"
-          defaultValue={user?.email}
           type="email"
           label="Email"
         />
@@ -45,8 +41,7 @@ export default function UserProfileForm({ user }: { user?: User | null }) {
           inputType="input"
           name="phoneNumber"
           placeholder="Enter phone number"
-          defaultValue={`${user?.phoneNumber}`}
-          type="number"
+          type="text"
           label="Phone Number"
         />
         <FormGenerator
@@ -55,7 +50,6 @@ export default function UserProfileForm({ user }: { user?: User | null }) {
           inputType="input"
           name="companyName"
           placeholder="Enter company name"
-          defaultValue={user?.companyName || ""}
           type="text"
           label="Company Name"
         />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useProspectForm } from "@/hooks/prospect/use-prospects-form";
+import { useProspectForm } from "@/hooks/prospect/use-prospect-form";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";

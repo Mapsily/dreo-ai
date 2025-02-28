@@ -1,17 +1,16 @@
 "use client";
-import { useChangePassword } from "@/hooks/settings/use-settings";
-import React from "react";
 
-import FormGenerator from "../forms/form-generator";
-import { Button } from "../ui/button";
-import { Loader } from "../loader";
+import React from "react";
+import { useChangePassword } from "@/hooks/setting/use-setting";
+import FormGenerator from "@/components/shared/form-generator";
+import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/shared/loader";
 
 const ChangePassword = () => {
-  const { register, errors, onChangePassword, loading, isDirty } =
-    useChangePassword();
+  const { register, errors, onUpdate, loading, isDirty } = useChangePassword();
 
   return (
-    <form onSubmit={onChangePassword} className="relative">
+    <form onSubmit={onUpdate} className="relative">
       <Button
         disabled={!isDirty}
         variant="link"
@@ -22,7 +21,7 @@ const ChangePassword = () => {
       <FormGenerator
         register={register}
         errors={errors}
-        name="confirmPassword"
+        name="newPassword"
         placeholder="Enter new password"
         type="password"
         inputType="input"
