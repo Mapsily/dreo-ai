@@ -1,22 +1,11 @@
 "use server";
 
-import fs from "fs/promises";
 import { parse } from "csv-parse/sync";
-import XLSX from "xlsx";
+import * as XLSX from "xlsx";
 import { predictFields } from "@/lib/utils";
 import { client } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-
-export const onAddProspects = async (
-  data: Prisma.ProspectCreateManyInput[]
-) => {
-  try {
-    await client.prospect.createMany({ data });
-    return { status: 200, message: "Prospects added" };
-  } catch (error) {
-    return { status: 500, error: "Error adding prospects" };
-  }
-};
+import { revalidatePath } from "next/cache";
 
 export const getPropects = async (clerkId: string) => {
   try {
@@ -30,6 +19,54 @@ export const getPropects = async (clerkId: string) => {
     return { status: 200, data: prospects };
   } catch (error) {
     return { status: 500, error: "Error fetching prospects" };
+  }
+};
+
+export const addProspects = async (data: Prisma.ProspectCreateManyInput[]) => {
+  try {
+    await client.prospect.createMany({ data });
+    revalidatePath("/dashboard/prospects");
+    return { status: 200, message: "Prospects added" };
+  } catch (error) {
+    return { status: 500, error: "Error adding prospects" };
+  }
+};
+
+export const deleteProspect = async (prospectId: string) => {
+  try {
+    await client.conversation.deleteMany({
+      where: {
+        prospectId,
+      },
+    });
+    await client.appointment.deleteMany({
+      where: {
+        prospectId,
+      },
+    });
+    await client.prospect.delete({ where: { id: prospectId } });
+    revalidatePath("/dashboard/prospects");
+    return { status: 200, message: "Prospect deleted" };
+  } catch (error) {
+    return { status: 500, error: "Error deleting prospect" };
+  }
+};
+
+export const updateProspect = async (
+  prospectId: string,
+  updates: Prisma.ProspectUpdateInput
+) => {
+  try {
+    await client.prospect.update({
+      where: {
+        id: prospectId,
+      },
+      data: updates,
+    });
+    revalidatePath("/dashboard/prospects");
+    return { status: 200, message: "Prospect updated" };
+  } catch (error) {
+    return { status: 500, error: "Error updating prospect" };
   }
 };
 

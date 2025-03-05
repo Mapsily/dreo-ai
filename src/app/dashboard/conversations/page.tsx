@@ -7,8 +7,8 @@ import ConversationPanel from "@/components/conversations/conversation-panel";
 import InfoBar from "@/components/shared/infobar";
 import { getConversations } from "@/actions/conversation";
 import NoItemsLayout from "@/components/shared/no-items-layout.tsx";
-import { PhoneForwarded } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import ConversationHeader from "@/components/conversations/conversation-header";
+import { OutreachSheetButton } from "@/components/shared/outreach-sheet";
 
 const ConversationPage = async ({
   searchParams,
@@ -18,28 +18,30 @@ const ConversationPage = async ({
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/");
   const { id } = await searchParams;
-  const res = await getConversations(clerkUser.id);
-  const selectedConversation = res.data?.find((c) => c.id === id);
+  const { data: conversations } = await getConversations(clerkUser.id);
+  const selectedConversation = conversations?.find((c) => c.id === id);
+  const isEmpty = !conversations?.length;
 
   return (
     <div className="w-full h-full p-8">
       <InfoBar />
+      {!isEmpty && (
+        <div className="mb-8">
+          <ConversationHeader />
+        </div>
+      )}
       <div className="flex justify-center gap-2">
-        <ConversationsTable conversations={res.data || []} />
+        <ConversationsTable conversations={conversations || []} />
         {selectedConversation && (
           <ConversationPanel conversation={selectedConversation} />
         )}
       </div>
-      {!res.data?.length && (
+      {isEmpty && (
         <NoItemsLayout
           description="Once your AI reaches out to prospects, their responses will appear here."
           imageUrl="/images/no-conversations.png"
           title="No Conversations Yet!"
-          Actions={
-            <Button variant="outline">
-              <PhoneForwarded /> Start Outreach
-            </Button>
-          }
+          Actions={<OutreachSheetButton variant="outline" />}
         />
       )}
     </div>

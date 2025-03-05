@@ -82,7 +82,7 @@ const AudioPlayer: React.FC<MusicPlayerProps> = ({ src }) => {
           type="range"
           value={progress}
           onChange={seekAudio}
-          className="w-full appearance-none bg-green-600 h-1 rounded-lg cursor-pointer mx-2"
+          className="w-full appearance-none bg-lime-600 h-1 rounded-lg cursor-pointer mx-2"
         />
         <span>{formatTime(duration)}</span>
       </div>
@@ -99,7 +99,7 @@ const AudioPlayer: React.FC<MusicPlayerProps> = ({ src }) => {
           <RotateCcw />
         </Button>
 
-        <Button variant="link" onClick={togglePlay} className="text-green-600">
+        <Button variant="link" onClick={togglePlay} className="text-lime-600">
           {isPlaying ? <Play /> : <Pause />}
         </Button>
 

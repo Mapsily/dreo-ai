@@ -18,6 +18,6 @@ export const getConversations = async (clerkId: string) => {
     });
     return { status: 200, data: conversations };
   } catch (error) {
-    return { status: 500, message: "Server error" };
+    return { status: 500, message: "Error fetching conversations" };
   }
 };

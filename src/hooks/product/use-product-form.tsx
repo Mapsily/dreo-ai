@@ -10,7 +10,7 @@ import { ProductInputSchema } from "@/schemas/product.schema";
 import { addProducts, updateProduct } from "@/actions/product";
 import { getUser } from "@/actions/auth";
 
-export const useProductForm = (defaultValues: Product) => {
+export const useProductForm = (defaultValues?: Product) => {
   const {
     register,
     handleSubmit,
@@ -27,6 +27,7 @@ export const useProductForm = (defaultValues: Product) => {
   const [products, setProducts] = useState<Prisma.ProductCreateManyInput[]>([]);
 
   const onUpdate = handleSubmit(async (product) => {
+    if (!defaultValues) return;
     setLoading(true);
     try {
       const res = await updateProduct(defaultValues.id, product);
@@ -58,8 +59,8 @@ export const useProductForm = (defaultValues: Product) => {
 
   const onAdd = handleSubmit((product) => {
     setProducts((p) => [...p, product]);
-    toast({ title: "Success", description: "Product added" });
     reset();
+    toast({ title: "Success", description: "Product added" });
   });
 
   const onAddSingle = handleSubmit(async (product) => {
@@ -68,7 +69,7 @@ export const useProductForm = (defaultValues: Product) => {
   });
 
   const onSubmit = async (
-    product: Prisma.ProductCreateManyInput | undefined
+    product?: Prisma.ProductCreateManyInput | undefined
   ) => {
     setLoading(true);
     try {

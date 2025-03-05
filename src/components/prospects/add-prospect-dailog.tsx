@@ -1,35 +1,61 @@
+"use client";
+
+import { PlusCircle, UserPlus } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
-import { PlusCircle, UserPlus } from "lucide-react";
 import ProspectForm from "./prospect-form";
+import { useProspectContext } from "@/context/prospect-provider";
 
 export default function AddProspectDialog() {
+  const { openAddDialog, closeAddProspectDialog } = useProspectContext();
+
+  const handleOpenChange = (value: boolean) => {
+    if (!value) closeAddProspectDialog();
+  };
+
+  const handleSubmit = () => {
+    closeAddProspectDialog();
+  };
+
+  const handleCancel = () => {
+    closeAddProspectDialog();
+  };
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <PlusCircle /> Add manually
-        </Button>
-      </DialogTrigger>
+    <Dialog open={openAddDialog} onOpenChange={handleOpenChange}>
       <DialogContent className="bg-white">
         <DialogHeader className="flex flex-row gap-2 items-start">
           <UserPlus size={24} />
           <div>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogTitle>Add manually</DialogTitle>
             <DialogDescription>
-              Add new prospect you want AI Agent to contact.
+              Type prospects data to add prospects manually.
             </DialogDescription>
           </div>
         </DialogHeader>
-        <ProspectForm />
+        <ProspectForm onSubmit={handleSubmit} onCancel={handleCancel} />
       </DialogContent>
     </Dialog>
+  );
+}
+
+export function AddProspectDialogButton() {
+  const { openAddProspectDialog } = useProspectContext();
+
+  const hancleClick = () => {
+    openAddProspectDialog();
+  };
+
+  return (
+    <Button onClick={hancleClick} variant="outline">
+      <PlusCircle /> Add manually
+    </Button>
   );
 }

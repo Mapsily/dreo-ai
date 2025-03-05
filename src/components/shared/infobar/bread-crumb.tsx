@@ -20,7 +20,7 @@ const BreadCrumb = () => {
           : page == "appointments"
           ? "View and edit all your appointments"
           : page == "conversations"
-          ? "Send bulk emails to your customers"
+          ? "A list of all your AI Conversations."
           : page == "products"
           ? "A list of all your products/services."
           : page === "support"

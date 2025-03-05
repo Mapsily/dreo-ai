@@ -14,21 +14,20 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import type { Appointment } from "./appointment-view";
-import { APPINTMENT_HEADERS } from "@/constants/table";
+import { APPOINTMENT_HEADERS } from "@/constants/table";
 import TagView from "../shared/tag-view";
 import { Loader } from "../shared/loader";
 
-
 interface Props {
   appointments: Appointment[];
-  q: string;
   onDelete: (id: string) => Promise<void>;
 }
 
-export default function AppointmentTable({ appointments, q, onDelete }: Props) {
+export default function AppointmentTable({ appointments, onDelete }: Props) {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const selectedId = searchParams.get("id");
+  const q = searchParams.get("q");
 
   const handleDelete = async (id: string) => {
     setLoading(true);
@@ -47,7 +46,7 @@ export default function AppointmentTable({ appointments, q, onDelete }: Props) {
     <Table>
       <TableHeader>
         <TableRow>
-          {APPINTMENT_HEADERS.map((a) => (
+          {APPOINTMENT_HEADERS.map((a) => (
             <TableHead key={a}>{a}</TableHead>
           ))}
         </TableRow>
@@ -83,7 +82,7 @@ export default function AppointmentTable({ appointments, q, onDelete }: Props) {
         ) : (
           <TableRow>
             <TableCell
-              colSpan={APPINTMENT_HEADERS.length}
+              colSpan={APPOINTMENT_HEADERS.length}
               className="text-center pt-4 text-gray-600"
             >
               No appointments found for "{q}"

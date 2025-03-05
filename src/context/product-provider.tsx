@@ -3,9 +3,6 @@
 import { Product } from "@prisma/client";
 import React, { createContext, useContext, useState } from "react";
 
-import AddProductDialog from "@/components/products/add-product-dialog";
-import UpdateProductDialog from "@/components/products/update-product-dialog";
-
 type ProductContextType = {
   openAddDialog: boolean;
   openAddProductDialog: () => void;
@@ -13,7 +10,7 @@ type ProductContextType = {
   openUpdateDialog: boolean;
   openUpdateProductDialog: (product: Product) => void;
   closeUpdateProductDialog: () => void;
-  product: Product;
+  product: Product |  undefined;
 };
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -25,7 +22,7 @@ export const ProductContextProvider = ({
 }) => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<Product | undefined>(undefined);
 
   const openAddProductDialog = () => {
     setOpenAddDialog(true);
@@ -41,7 +38,7 @@ export const ProductContextProvider = ({
   };
 
   const closeUpdateProductDialog = () => {
-    setProduct(null);
+    setProduct(undefined);
     setOpenUpdateDialog(false);
   };
 

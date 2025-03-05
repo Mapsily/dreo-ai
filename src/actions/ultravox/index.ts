@@ -30,6 +30,7 @@ export async function getCallTranscript(callId: string) {
           "X-API-Key": process.env.ULTRADOX_API_KEY as string,
           Accept: "application/json",
         },
+        cache: "force-cache",
       });
       if (!response.ok) {
         return { status: response.status, message: "Server error" };

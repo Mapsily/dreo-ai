@@ -60,14 +60,14 @@ export default function ConversationPanel({
   //   };
   // }, [conversation.ultravoxCallId]);
 
-  const handleClick = () => {
+  const handleClose = () => {
     router.replace(`/dashboard/conversations`);
   };
 
   return (
     <Card className="relative min-w-[380px] w-[380px] p-4">
       <Button
-        onClick={handleClick}
+        onClick={handleClose}
         className="absolute right-2 top-2"
         variant="ghost"
       >
@@ -98,9 +98,9 @@ export default function ConversationPanel({
           <AudioPlayer src={audioUrl} />
           <Separator className="my-2" />
           <h3 className="text-sm font-semibold text-gray-800">TRANSCRIPT</h3>
-          <div className="bg-gray-50 p-4 rounded-md max-h-[800px] overflow-y-auto">
+          <div className="bg-gray-50 flex flex-col gap-4 px-4 py-2 rounded-md max-h-[800px] overflow-y-auto">
             {transcript.map((t) => (
-              <div className="mt-4">
+              <div>
                 <p className="font-semibold">
                   {t.role === "MESSAGE_ROLE_AGENT"
                     ? "Agent"

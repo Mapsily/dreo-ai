@@ -1,14 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Check, Trash2, PencilLine, FilePen } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -17,76 +11,111 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FilePen, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const fieldOptions = ["Name", "Phone", "Notes", "Unknown"];
+const FIELD_OPTIONS = ["Name", "Phone", "Notes", "Unknown"];
+const REQUIRED_HEADERS = ["Name", "Phone", "Notes"];
 
 interface PredictedData {
   headers: string[];
   rows: Record<string, any>[];
 }
 
-interface EditProspectsTableProps {
+interface Props {
   predictedData: PredictedData;
-  onChange: (data: PredictedData) => void;
+  setPredictedData: (data: PredictedData) => void;
+  setErrors: (errors: Record<string, boolean>) => void;
 }
 
 export default function EditProspectsTable({
   predictedData,
-  onChange,
-}: EditProspectsTableProps) {
-  const [headers, setHeaders] = useState<string[]>(predictedData.headers);
-  const [rows, setRows] = useState<Record<string, any>[]>(predictedData.rows);
+  setPredictedData,
+  setErrors,
+}: Props) {
+  const [headers, setHeaders] = useState(predictedData.headers);
+  const [errorsState, setErrorsState] = useState<Record<string, boolean>>({});
   const [editingCell, setEditingCell] = useState<{
-    row: number;
-    col: number;
+    rowIdx: number;
+    colIdx: number;
   } | null>(null);
   const [cellValues, setCellValues] = useState<Record<string, any>[]>([
     ...predictedData.rows,
   ]);
+  const [editValue, setEditValue] = useState<string>("");
+  const rows = predictedData.rows;
 
   useEffect(() => {
-    onChange({ headers, rows: cellValues });
-  }, [headers, rows, cellValues]);
+    validateData();
+    setPredictedData({ headers, rows: cellValues });
+  }, [headers, cellValues]);
 
-  const handleHeaderChange = (index: number, value: string) => {
-    const newHeaders = [...headers];
-    newHeaders[index] = value;
-    setHeaders(newHeaders);
+  const validateData = () => {
+    const newErrors: Record<string, boolean> = {};
+
+    const missingHeaders = REQUIRED_HEADERS.filter(
+      (req) => !headers.includes(req)
+    );
+    if (missingHeaders.length > 0) {
+      missingHeaders.map((h) => {
+        newErrors[h] = true;
+      });
+    }
+
+    cellValues.forEach((row, rowIndex) => {
+      headers.forEach((header, colIndex) => {
+        const key = Object.keys(row)[colIndex];
+        const value = row[key]?.trim() || "";
+
+        if (header === "Name" || header === "Notes") {
+          if (value.length < 1) newErrors[`${rowIndex}-${colIndex}`] = true;
+        }
+
+        if (header === "Phone") {
+          if (!/^\+\d+$/.test(value)) {
+            newErrors[`${rowIndex}-${colIndex}`] = true;
+          }
+        }
+      });
+    });
+
+    setErrorsState(newErrors);
+    setErrors(newErrors);
   };
 
-  const startEditing = (rowIdx: number, colIdx: number) => {
-    setEditingCell({ row: rowIdx, col: colIdx });
+  const startEditing = (
+    rowIdx: number,
+    colIdx: number,
+    currentValue: string
+  ) => {
+    setEditingCell({ rowIdx, colIdx });
+    setEditValue(currentValue);
   };
 
-  const handleCellChange = (rowIdx: number, colIdx: number, value: string) => {
-    const newRows = [...cellValues];
+  const saveCell = () => {
+    if (!editingCell) return;
+    const { rowIdx, colIdx } = editingCell;
+    const updatedRows = [...cellValues];
     const key = Object.keys(rows[rowIdx])[colIdx];
-    newRows[rowIdx] = { ...newRows[rowIdx], [key]: value };
-    setCellValues(newRows);
+    updatedRows[rowIdx] = { ...updatedRows[rowIdx], [key]: editValue };
+    setCellValues(updatedRows);
     setEditingCell(null);
-  };
-
-  const handleDeleteRow = (rowIdx: number) => {
-    const newRows = cellValues.filter((_, idx) => idx !== rowIdx);
-    setCellValues(newRows);
-    setRows(newRows);
-  };
-
-  const isCellInvalid = (value: any) => {
-    return value === "" || value === null || value === undefined;
   };
 
   return (
     <div>
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-2 mb-4">
         <FilePen />
         <span>
           <h3 className="font-medium mb-1">Validate data</h3>
           <p className="text-sm text-gray-400 mb-4">
-            The data uploaded in file may have some missing or <br /> incorrect
-            information. Please validate before moving further.
+            The data uploaded in csv file may have some missing or <br />{" "}
+            incorrect information. Please validate before moving further.
           </p>
         </span>
       </div>
@@ -97,15 +126,23 @@ export default function EditProspectsTable({
               <TableHead key={index}>
                 <Select
                   value={header}
-                  onValueChange={(value) => handleHeaderChange(index, value)}
+                  onValueChange={(value) => {
+                    const newHeaders = [...headers];
+                    newHeaders[index] = value;
+                    setHeaders(newHeaders);
+                  }}
                 >
-                  <SelectTrigger className="w-[180px] border-none shadow-none">
-                    <SelectValue />
+                  <SelectTrigger className="w-[150px] border-none shadow-none">
+                    <SelectValue placeholder="header" />
                   </SelectTrigger>
                   <SelectContent>
-                    {fieldOptions.map((opt) => (
-                      <SelectItem key={opt} value={opt}>
-                        {opt}
+                    {FIELD_OPTIONS.map((option) => (
+                      <SelectItem
+                        className="hover:bg-gray-50 cursor-pointer"
+                        key={option}
+                        value={option}
+                      >
+                        {option}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -114,48 +151,46 @@ export default function EditProspectsTable({
             ))}
           </TableRow>
         </TableHeader>
-        <TableBody className="space-y-2">
-          {rows.map((row, rowIdx) => (
+        <TableBody>
+          {cellValues.map((row, rowIdx) => (
             <TableRow key={rowIdx}>
               {Object.values(row).map((cell, colIdx) => {
+                const key = `${rowIdx}-${colIdx}`;
+                const isInvalid = errorsState[key];
                 const isEditing =
-                  editingCell?.row === rowIdx && editingCell?.col === colIdx;
-                const isInvalid = isCellInvalid(
-                  cellValues[rowIdx][Object.keys(row)[colIdx]]
-                );
+                  editingCell?.rowIdx === rowIdx &&
+                  editingCell?.colIdx === colIdx;
+
                 return (
                   <TableCell
                     key={colIdx}
-                    className={`relative bg-gray-100 rounded-l-sm ${
-                      isInvalid ? "border-2 border-red-500" : ""
-                    }`}
-                    onClick={() => !isEditing && startEditing(rowIdx, colIdx)}
+                    className="relative bg-gray-50 border-b-2 border-white"
                   >
                     {isEditing ? (
-                      <input
-                        type="text"
-                        value={
-                          cellValues[rowIdx][Object.keys(row)[colIdx]] || ""
-                        }
-                        onChange={(e) =>
-                          handleCellChange(rowIdx, colIdx, e.target.value)
-                        }
-                        onBlur={() => setEditingCell(null)}
-                        autoFocus
-                        className="focus:outline-none focus:bg-transparent"
-                      />
-                    ) : (
-                      <div className="group flex items-center justify-between">
-                        <span>
-                          {cellValues[rowIdx][Object.keys(row)[colIdx]] || ""}
-                        </span>
-                        <FilePen
-                          className={`w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 ${
-                            isInvalid
-                              ? "text-red-500 opacity-100"
-                              : "text-gray-500"
-                          }`}
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          autoFocus
+                          className="w-full bg-transparent focus:outline-none"
                         />
+                        <Check
+                          className="w-5 h-5 text-green-500 cursor-pointer"
+                          onClick={saveCell}
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <span className={isInvalid ? "text-red-500" : ""}>
+                          {cell || "—"}
+                        </span>
+                        {isInvalid && (
+                          <PencilLine
+                            className="w-4 h-4 ml-2 cursor-pointer text-red-500 hover:text-black"
+                            onClick={() => startEditing(rowIdx, colIdx, cell)}
+                          />
+                        )}
                       </div>
                     )}
                   </TableCell>
@@ -165,7 +200,9 @@ export default function EditProspectsTable({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleDeleteRow(rowIdx)}
+                  onClick={() =>
+                    setCellValues(cellValues.filter((_, idx) => idx !== rowIdx))
+                  }
                 >
                   <Trash2 className="w-4 h-4 text-red-500" />
                 </Button>
@@ -174,6 +211,16 @@ export default function EditProspectsTable({
           ))}
         </TableBody>
       </Table>
+      <div className="flex flex-col gap-2 mt-4 text-sm text-red-500">
+        {REQUIRED_HEADERS.map((h) => {
+          if (errorsState[h]) {
+            return <p>{errorsState[h] && `*${h} column required`}</p>;
+          }
+        })}
+        {!!Object.keys(errorsState).length && (
+          <p>*Fix column fields</p>
+        )}
+      </div>
     </div>
   );
 }

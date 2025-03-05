@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, FormEvent, MouseEvent, useEffect } from "react";
 import { PlusCircle, Box } from "lucide-react";
-import { Product } from "@prisma/client";
 
 import {
   Dialog,
@@ -10,12 +8,10 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import ProductForm from "./product-form";
 import { useProductContext } from "@/context/product-provider";
-import { useProductForm } from "@/hooks/product/use-product-form";
 
 export default function AddProductDialog() {
   const { openAddDialog, closeAddProductDialog } = useProductContext();

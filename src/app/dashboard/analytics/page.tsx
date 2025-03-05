@@ -1,13 +1,14 @@
+import React from "react";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { Calendar, Phone, ChartLine, UserCheck } from "lucide-react";
+
 import AppointmentOverview from "@/components/analytics/appointment-overview";
 import DashboardCard from "@/components/analytics/dashboard-card";
 import ConversationOverview from "@/components/analytics/conversation-overview";
-import { Calendar, Phone, ChartLine, UserCheck } from "lucide-react";
 import InfoBar from "@/components/shared/infobar";
 import { fetchAnalytics } from "@/actions/analytic";
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import OutreachSheet from "@/components/shared/outreach-sheet";
-import React from "react";
+import { OutreachSheetButton } from "@/components/shared/outreach-sheet";
 import { getDirection } from "@/lib/utils";
 
 const AnalyticsPage = async () => {
@@ -29,7 +30,7 @@ const AnalyticsPage = async () => {
 
   return (
     <div className="w-full flex-1 p-8">
-      <InfoBar Actions={<OutreachSheet />} />
+      <InfoBar Actions={<OutreachSheetButton />} />
       <div className="grid grid-cols-4 gap-5">
         <DashboardCard
           value={todayCallCount || 0}

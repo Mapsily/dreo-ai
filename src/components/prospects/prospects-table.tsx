@@ -20,8 +20,12 @@ import {
 
 import { PROSPECTS_HEADERS } from "@/constants/table";
 import TagView from "../shared/tag-view";
+import ProspectOption from "./prospect-option";
 
 const ProspectsTable = ({ prospects }: { prospects: Prospect[] }) => {
+  if (!prospects.length) {
+    return null;
+  }
   return (
     <Table>
       <TableHeader>
@@ -43,17 +47,7 @@ const ProspectsTable = ({ prospects }: { prospects: Prospect[] }) => {
             <TableCell>{p.lastContacted?.toDateString() || "N/A"}</TableCell>
             <TableCell>{p.rescheduledFor?.toDateString() || "N/A"}</TableCell>
             <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Billing</DropdownMenuItem>
-                  <DropdownMenuItem>Team</DropdownMenuItem>
-                  <DropdownMenuItem>Subscription</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <ProspectOption prospect={p} />
             </TableCell>
           </TableRow>
         ))}

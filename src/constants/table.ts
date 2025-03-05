@@ -16,12 +16,22 @@ export const PRODUCT_HEADERS = [
   "Action",
 ];
 
-export const APPINTMENT_HEADERS = [
+export const APPOINTMENT_HEADERS = [
   "Name",
   "Phone Number",
   "Product interested",
   "Interest level",
   "Date & Time",
   "Notes",
+  "Action",
+];
+
+export const CONVERSATION_HEADERS = [
+  "Name",
+  "Phone Number",
+  "Last contacted",
+  "Duration",
+  "Status",
+  "Result",
   "Action",
 ];

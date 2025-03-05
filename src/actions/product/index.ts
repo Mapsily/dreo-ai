@@ -53,7 +53,6 @@ export const updateProduct = async (
     revalidatePath("/dashboard/products");
     return { status: 200, message: "Product updated" };
   } catch (error) {
-    console.log(error);
     return { status: 500, error: "Error updating product" };
   }
 };

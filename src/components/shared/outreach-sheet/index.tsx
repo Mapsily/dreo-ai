@@ -7,7 +7,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import ProgressView from "@/components/shared/progress-view";
@@ -21,6 +20,7 @@ import ProspectAddSelector from "./prospect-add-selector";
 import UploadProspects from "../upload-prospects";
 import { validateProspectsFields } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useOutreachContext } from "@/context/outreach-provider";
 
 export default function OutreachSheet() {
   const {
@@ -42,8 +42,8 @@ export default function OutreachSheet() {
     prospects,
     setProspects,
   } = useProspectForm();
+  const { openSheet, closeOutreachSheet } = useOutreachContext();
   const [step, setStep] = useState(1);
-  const { toast } = useToast();
 
   const handleBack = async () => {
     if (step === 4) setStep(2);
@@ -51,25 +51,12 @@ export default function OutreachSheet() {
   };
 
   const handleNext = async () => {
-    if (step === 1) {
+    if (step === 5) {
       await productOnSubmit();
-    } else if (step === 3) {
-      const isValid = validateProspectsFields(prospects);
-      if (isValid) {
-        await prospectOnSubmit();
-        setStep(5);
-      } else {
-        toast({
-          title: "Error",
-          description: "Some field are not valid",
-          variant: "destructive",
-        });
-      }
-      return;
-    } else if (step === 4) {
       await prospectOnSubmit();
     }
-    setStep(step + 1);
+    if (step === 3) setStep(5);
+    else setStep(step + 1);
   };
 
   const handleSelect = async (type: "manual" | "upload") => {
@@ -77,13 +64,12 @@ export default function OutreachSheet() {
     else setStep(3);
   };
 
+  const handleChange = (value: boolean) => {
+    if (!value) closeOutreachSheet();
+  };
+
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button>
-          <PhoneForwarded /> Start Outreach
-        </Button>
-      </SheetTrigger>
+    <Sheet open={openSheet} onOpenChange={handleChange}>
       <SheetContent side="right" className="p-0 !max-w-[700px] overflow-y-auto">
         <SheetHeader className="border-b p-4 flex flex-row items-center gap-4">
           {step !== 1 && (
@@ -139,5 +125,23 @@ export default function OutreachSheet() {
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+export function OutreachSheetButton({
+  variant = "default",
+}: {
+  variant?: "default" | "secondary" | "outline";
+}) {
+  const { openOutreachSheet } = useOutreachContext();
+
+  const handleClick = () => {
+    openOutreachSheet();
+  };
+
+  return (
+    <Button variant={variant} onClick={handleClick}>
+      <PhoneForwarded /> Start Outreach
+    </Button>
   );
 }

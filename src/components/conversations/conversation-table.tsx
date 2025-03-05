@@ -9,11 +9,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Play, Square } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Prisma } from "@prisma/client";
-import { getDuration } from "@/lib/utils";
+import { cn, getDuration } from "@/lib/utils";
 import TagView from "../shared/tag-view";
+import { CONVERSATION_HEADERS } from "@/constants/table";
 
 export type Conversation = Prisma.ConversationGetPayload<{
   include: { prospect: true };
@@ -27,35 +28,43 @@ export default function ConversationsTable({ conversations }: Props) {
   const seachParams = useSearchParams();
   const router = useRouter();
   const selectedId = seachParams.get("id");
+  const q = seachParams.get("q");
 
   const handleClick = (id: string) => {
-    router.replace(`/dashboard/conversations?id=${id}`);
+    const newSearchParams = new URLSearchParams(seachParams);
+    if (id) newSearchParams.set("id", id);
+    if (id === selectedId) newSearchParams.delete("id");
+    router.replace(`/dashboard/conversations?${newSearchParams.toString()}`);
   };
 
   if (!conversations.length) {
     return null;
   }
 
+  const filteredConversations = conversations.filter((a) =>
+    q
+      ? a.prospect.name.toLowerCase().includes(q.toLowerCase()) ||
+        a.prospect.phone.toLowerCase().includes(q.toLowerCase())
+      : true
+  );
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Phone number</TableHead>
-          <TableHead>Last contacted</TableHead>
-          <TableHead>Duration</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Result</TableHead>
-          <TableHead className="w-[100px]">Actions</TableHead>
+          {CONVERSATION_HEADERS.map((h) => (
+            <TableHead key={h}>{h}</TableHead>
+          ))}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {conversations.map((conversation) => (
+        {filteredConversations.map((conversation) => (
           <TableRow
             key={conversation.id}
-            className={`cursor-pointer ${
-              selectedId === conversation.id ? "bg-muted" : ""
-            }`}
+            className={cn(
+              "cursor-pointer",
+              selectedId === conversation.id && "border border-lime-600"
+            )}
             onClick={() => handleClick(conversation.id)}
           >
             <TableCell>{conversation.prospect.name}</TableCell>
@@ -83,6 +92,16 @@ export default function ConversationsTable({ conversations }: Props) {
             </TableCell>
           </TableRow>
         ))}
+        {!filteredConversations.length && (
+          <TableRow>
+            <TableCell
+              colSpan={CONVERSATION_HEADERS.length}
+              className="text-center pt-4 text-gray-600"
+            >
+              No conversations found for "{q}"
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </Table>
   );

@@ -1,47 +1,35 @@
 import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
-import { PhoneForwarded } from "lucide-react";
 import React from "react";
 
 import InfoBar from "@/components/shared/infobar";
 import { getAppointments } from "@/actions/appointment";
 import NoItemsLayout from "@/components/shared/no-items-layout.tsx";
-import { Button } from "@/components/ui/button";
 import AppointmentHeader from "@/components/appointments/appointment-header";
 import AppointmentView from "@/components/appointments/appointment-view";
+import { OutreachSheetButton } from "@/components/shared/outreach-sheet";
 
-type Props = {
-  searchParams: Promise<{ layout: "grid" | "list"; q: string }>;
-};
-
-const AppointmentsPage = async ({ searchParams }: Props) => {
+const AppointmentsPage = async () => {
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/");
-  const { layout, q } = await searchParams;
-  const { data } = await getAppointments(clerkUser.id);
+  const { data: appointments } = await getAppointments(clerkUser.id);
+  const isEmpty = !appointments?.length;
 
   return (
     <div className="p-8">
       <InfoBar />
-
-      {data && !!data.length && (
-        <>
+      {!isEmpty && (
+        <div className="mb-8">
           <AppointmentHeader />
-          <div className="mt-8">
-            <AppointmentView appointments={data} layout={layout} q={q} />
-          </div>
-        </>
+        </div>
       )}
-      {!data?.length && (
+      <AppointmentView appointments={appointments || []} />
+      {isEmpty && (
         <NoItemsLayout
           description="Start an outreach and Let the AI book appointments for you!"
           imageUrl="/images/no-appointments.png"
           title="Your scheduled meetings will appear here. "
-          Actions={
-            <Button variant="outline">
-              <PhoneForwarded /> Start Outreach
-            </Button>
-          }
+          Actions={<OutreachSheetButton variant="outline" />}
         />
       )}
     </div>

@@ -9,7 +9,7 @@ import { Loader } from "@/components/shared/loader";
 import { useProductForm } from "@/hooks/product/use-product-form";
 
 type Props = {
-  product: Product;
+  product?: Product;
   onSubmit?: () => void;
   onCancel?: () => void;
 };
