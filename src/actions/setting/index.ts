@@ -14,7 +14,8 @@ export const getSettings = async (clerkId: string) => {
         },
       },
     });
-    return { status: 200, data: settings };
+    if (settings) return { status: 200, data: settings };
+    return { status: 404, data: null };
   } catch (error) {
     return { status: 500, message: "Server Error" };
   }
@@ -56,9 +57,7 @@ export const onUpdatePassword = async (password: string) => {
   try {
     const clerkUser = await currentUser();
     if (!clerkUser) return { status: 401, message: "UnAuthorised" };
-
     await (await clerkClient()).users.updateUser(clerkUser.id, { password });
-
     return { status: 200, message: "Password updated" };
   } catch (error: any) {
     return { status: 500, message: error.errors[0].message };
@@ -131,20 +130,6 @@ export const getSubscription = async (clerkId: string) => {
       },
     });
     return { status: 200, data: subscription };
-  } catch (error) {
-    return { status: 500, message: "Server Error" };
-  }
-};
-
-export const getVoices = async () => {
-  try {
-    const options = {
-      method: "GET",
-      headers: { "X-API-Key": process.env.ULTRADOX_API_KEY || "" },
-    };
-    const res = await fetch("https://api.ultravox.ai/api/voices", options);
-    const data = await res.json();
-    return { status: 200, data: data.results };
   } catch (error) {
     return { status: 500, message: "Server Error" };
   }

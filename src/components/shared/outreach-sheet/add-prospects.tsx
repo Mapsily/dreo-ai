@@ -1,9 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { BookMarked, PlusCircle } from "lucide-react";
+import { BookMarked, PlusCircle, Trash2 } from "lucide-react";
 import FormGenerator from "@/components/shared/form-generator";
-import { useProspectForm } from "@/hooks/prospect/use-prospect-form";
 import {
   Table,
   TableBody,
@@ -13,32 +12,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PRODUCT_HEADERS } from "@/constants/table";
-import { Spinner } from "@/components/shared/loader/spinner";
-import { useState } from "react";
+import { FormEvent } from "react";
+import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
+import { Prisma } from "@prisma/client";
+import { Loader } from "../loader";
 
-type PROSPECT = {
-  name: string;
-  phone: string;
-  notes: number;
+type Props = {
+  register: UseFormRegister<Prisma.ProspectCreateManyInput>;
+  errors: FieldErrors<FieldValues>;
+  loading: boolean;
+  prospects: Prisma.ProspectCreateManyInput[];
+  onAdd: () => Promise<void>;
+  onDelete: (prospectIdx: number) => void;
 };
 
-const p = [
-  {
-    name: "fan",
-    description: "adsasasd",
-    price: 499,
-  },
-];
-
-export function AddProspects() {
-  const { errors, loading, onAdd, register, getValues } = useProspectForm();
-  const [prospects, setProspects] = useState<PROSPECT[]>(p);
-
-  const handleAdd = async (e) => {
+export function AddProspects({
+  errors,
+  loading,
+  onAdd,
+  onDelete,
+  prospects,
+  register,
+}: Props) {
+  const handleAdd = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await onAdd();
-    const prospect = getValues(["name", "phone", "notes"]);
-    setProspects((p) => [...p, prospect]);
   };
 
   return (
@@ -81,14 +79,15 @@ export function AddProspects() {
             register={register}
             type="text"
           />
-          <Button type="submit" variant="secondary" className="w-fit">
-            {loading ? (
-              <Spinner />
-            ) : (
-              <>
-                <PlusCircle /> Add
-              </>
-            )}
+          <Button
+            disabled={loading}
+            type="submit"
+            variant="secondary"
+            className="w-fit"
+          >
+            <Loader loading={loading}>
+              <PlusCircle /> Add
+            </Loader>
           </Button>
         </form>
       </div>
@@ -102,12 +101,18 @@ export function AddProspects() {
           </TableRow>
         </TableHeader>
         <TableBody className="space-y-2">
-          {prospects.map((p) => (
+          {prospects.map((p, idx) => (
             <TableRow>
-              <TableCell className="bg-gray-200 rounded-l-md">{p.name}</TableCell>
-              <TableCell className="bg-gray-200">{p.phone}</TableCell>
-              <TableCell className="bg-gray-200">{p.notes}</TableCell>
-              <TableCell className="bg-gray-200 rounded-r-md">{""}</TableCell>
+              <TableCell className="bg-gray-100 rounded-l-sm">
+                {p.name}
+              </TableCell>
+              <TableCell className="bg-gray-100">{p.phone}</TableCell>
+              <TableCell className="bg-gray-100">{p.notes}</TableCell>
+              <TableCell className="bg-gray-100 rounded-r-sm">
+                <Button onClick={() => onDelete(idx)} variant="secondary">
+                  <Trash2 className="text-red-600" />
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

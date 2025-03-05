@@ -3,7 +3,7 @@ import { getUser } from "@/actions/auth";
 import LogoutButton from "./logout-button";
 
 export default async function UserProfile() {
-  const user = await getUser();
+  const res = await getUser();
 
   return (
     <div className="px-2 py-1 font-semibold bg-gray-100 flex items-center gap-2 rounded-md">
@@ -14,10 +14,10 @@ export default async function UserProfile() {
           src="https://github.com/shadcn.pn"
         />
         <AvatarFallback className="bg-white rounded-md font-bold">
-          {`${user.data?.name}`.toLocaleUpperCase()[0]}
+          {`${res.data?.firstName}`.toLocaleUpperCase()[0]}
         </AvatarFallback>
       </Avatar>
-      {user.data?.name}
+      {res.data?.firstName} {res.data?.lastName}
       <LogoutButton />
     </div>
   );

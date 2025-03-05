@@ -25,14 +25,14 @@ export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
     path: "analytics",
   },
   {
-    label: "Prospects",
-    icon: Contact,
-    path: "prospects",
-  },
-  {
     label: "Products",
     icon: Box,
     path: "products",
+  },
+  {
+    label: "Prospects",
+    icon: Contact,
+    path: "prospects",
   },
   {
     label: "Conversations",

@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 import { format, isToday } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { APPOINTMENT } from "./calendar";
+import type { Appointment } from "./calendar";
 
 interface DayContentProps {
   day: Date;
-  appointments: APPOINTMENT[];
+  appointments: Appointment[];
 }
 
 export function DayContent({ day, appointments }: DayContentProps) {

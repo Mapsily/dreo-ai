@@ -34,9 +34,10 @@ type Props = {
   form?: string;
   defaultValue?: string;
   className?: string;
-  control?: Control;
+  control?: Control<any>;
   LeftIcon?: React.ReactNode;
   RightIcon?: React.ReactNode;
+  disabled?: boolean;
 };
 
 const FormGenerator = ({
@@ -55,8 +56,8 @@ const FormGenerator = ({
   control,
   LeftIcon,
   RightIcon,
+  disabled
 }: Props) => {
-  const [inputValue, setInputValue] = useState<string>("");
   switch (inputType) {
     case "input":
     default:
@@ -74,6 +75,7 @@ const FormGenerator = ({
               placeholder={placeholder}
               form={form}
               defaultValue={defaultValue}
+              disabled={disabled}
               className="text-gray-600 border-none shadow-none focus:ring-0 focus-visible:ring-0"
               {...register(name)}
             />

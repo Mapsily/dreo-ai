@@ -7,15 +7,14 @@ import {
 } from "@/actions/setting";
 import { useToast } from "@/hooks/use-toast";
 import {
-  ChangePasswordProps,
-  ChangePasswordSchema,
-} from "@/schemas/auth.schema";
-import {
   AccountSettingsSchema,
   AdvancedSettingsSchema,
   AgentSettingsSchema,
+  ChangePasswordInputSchema,
   ScriptSettingsSchema,
 } from "@/schemas/setting.schema";
+import { useUser } from "@clerk/nextjs";
+import { ClerkAPIError } from "@clerk/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AdvancedSetting,
@@ -77,31 +76,40 @@ export const useChangePassword = () => {
     handleSubmit,
     formState: { errors, isDirty },
     reset,
-  } = useForm<ChangePasswordProps>({
-    resolver: zodResolver(ChangePasswordSchema),
+  } = useForm({
+    resolver: zodResolver(ChangePasswordInputSchema),
     mode: "onChange",
   });
   const { toast } = useToast();
+  const { isLoaded, user } = useUser();
   const [loading, setLoading] = useState<boolean>(false);
 
   const onUpdate = handleSubmit(async (values) => {
+    if (!isLoaded) {
+      return;
+    }
+    setLoading(true);
     try {
-      setLoading(true);
-      const updated = await onUpdatePassword(values.newPassword);
-      if (updated.status === 200) {
-        toast({ title: "Success", description: updated.message });
-        reset(values);
+      const res = await onUpdatePassword(values.newPassword);
+      if (res.status == 200) {
+        toast({ title: "Success", description: "Password updated" });
+        reset();
       } else {
         toast({
           title: "Error",
-          description: updated.message,
+          description: res.message,
           variant: "destructive",
         });
-        reset();
       }
+    } catch (error: unknown) {
+      const clerkError = error as { errors?: ClerkAPIError[] };
+      toast({
+        title: "Error",
+        description: clerkError?.errors?.[0].longMessage,
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    } catch (error) {
-      console.log(error);
     }
   });
 

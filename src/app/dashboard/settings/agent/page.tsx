@@ -1,4 +1,5 @@
-import { getAgentSettings, getVoices } from "@/actions/setting";
+import { getAgentSettings } from "@/actions/setting";
+import { getVoices } from "@/actions/ultravox";
 import AgentSettingsForm from "@/components/settings/agent-settings-form";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";

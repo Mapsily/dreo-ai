@@ -1,4 +1,6 @@
 import React from "react";
+import { Product } from "@prisma/client";
+
 import {
   Table,
   TableBody,
@@ -7,10 +9,20 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { PRODUCT_HEADERS } from "@/constants/table";
-import { Product } from "@prisma/client";
 
-const ProductTable = ({ products }: { products: Product[] }) => {
+import { PRODUCT_HEADERS } from "@/constants/table";
+import ProductOption from "./product-option";
+
+type Props = {
+  products: Product[];
+};
+
+const ProductTable = ({ products }: Props) => {
+
+  if (!products.length) {
+    return null;
+  }
+
   return (
     <Table>
       <TableHeader>
@@ -22,12 +34,14 @@ const ProductTable = ({ products }: { products: Product[] }) => {
       </TableHeader>
       <TableBody>
         {products.map((p) => (
-          <TableRow>
+          <TableRow key={p.id}>
             <TableCell>{p.name}</TableCell>
             <TableCell>{p.description}</TableCell>
             <TableCell>{p.price}</TableCell>
             <TableCell>{p.createdAt?.toDateString()}</TableCell>
-            <TableCell>{""}</TableCell>
+            <TableCell>
+              <ProductOption product={p} />
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

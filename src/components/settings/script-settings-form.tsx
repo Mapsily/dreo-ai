@@ -4,9 +4,15 @@ import { useScriptSettings } from "@/hooks/setting/use-setting";
 import FormGenerator from "@/components/shared/form-generator";
 import { InputContainer } from "./input-container";
 import Header from "./header";
+import { ScriptSetting } from "@prisma/client";
 
-const ScriptSettingsForm = () => {
-  const { errors, loading, onUpdate, register, isDirty } = useScriptSettings();
+type Props = {
+  defaultValues?: ScriptSetting | null;
+};
+
+const ScriptSettingsForm = ({ defaultValues }: Props) => {
+  const { errors, loading, onUpdate, register, isDirty } =
+    useScriptSettings(defaultValues);
 
   return (
     <form className="flex flex-col gap-4">

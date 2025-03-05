@@ -1,10 +1,10 @@
-import { getSettings, setupDefaultSettings } from "@/actions/setting";
+import { getUser, onOnboardingSkip } from "@/actions/auth";
+import { setupDefaultSettings } from "@/actions/setting";
 import { Button } from "@/components/ui/button";
-import { currentUser } from "@clerk/nextjs/server";
 import { BarChart, Bot, Check, Clock, Phone } from "lucide-react";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 const FEATURES = [
   { text: "Everything in Starter +", Icon: Check },
@@ -15,10 +15,9 @@ const FEATURES = [
 ];
 
 export default async function SuccessPage() {
-  const clerkUser = await currentUser();
-  if (!clerkUser) redirect("/auth/sign-in");
-  const res = await getSettings(clerkUser?.id);
-  if (res.status === 200) redirect("/dashboard");
+  const res = await getUser();
+  if (res.status !== 200) redirect("/auth/sign-in");
+  if (res.data?.isOnboarded) redirect("/dashboard");
   await setupDefaultSettings();
 
   return (
@@ -51,9 +50,9 @@ export default async function SuccessPage() {
           <Button asChild>
             <Link href="/profile-setup">Profile Setup</Link>
           </Button>
-          <Button asChild variant="outline">
-            <Link href="/dashboard">Go to dashboard</Link>
-          </Button>
+          <form action={onOnboardingSkip}>
+            <Button type="submit" variant="outline">Go to dashboard</Button>
+          </form>
         </div>
       </div>
     </div>

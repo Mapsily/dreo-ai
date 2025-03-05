@@ -27,7 +27,9 @@ export const InputContainer = ({
         <label>{label}</label>
         <span className="text-sm text-gray-600">{description}</span>
       </div>
+      <div className="w-1/2">
       {children}
+      </div>
     </div>
   );
 };

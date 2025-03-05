@@ -16,8 +16,9 @@ import {
 } from "../ui/table";
 
 import { Prisma } from "@prisma/client";
-import Image from "next/image";
 import NoItemsLayout from "../shared/no-items-layout.tsx";
+import { getDuration } from "@/lib/utils";
+import TagView from "../shared/tag-view";
 
 export type Conversation = Prisma.ConversationGetPayload<{
   select: {
@@ -27,8 +28,8 @@ export type Conversation = Prisma.ConversationGetPayload<{
       };
     };
     status: true;
-    callEndAt: true;
-    callStartAt: true;
+    endAt: true;
+    startAt: true;
     notes: true;
   };
 }>;
@@ -66,8 +67,8 @@ const ConversationOverview = ({
                   <TableCell className="font-medium">
                     {c.prospect.name}
                   </TableCell>
-                  <TableCell>{c.status}</TableCell>
-                  <TableCell>{c.callStartAt.toDateString()}</TableCell>
+                  <TableCell><TagView tag={c.status} /></TableCell>
+                  <TableCell>{getDuration(c.startAt, c.endAt)}</TableCell>
                   <TableCell className="text-right">{c.notes}</TableCell>
                 </TableRow>
               ))}

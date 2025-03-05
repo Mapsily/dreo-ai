@@ -1,6 +1,6 @@
 const LevelView = ({ level }: { level: string }) => {
   return (
-    <div className="bg-background p-1 rounded-md text-xs font-semibold">
+    <div className="w-fit bg-background p-1 px-2 rounded-md text-xs font-medium">
       {level === "LOW" ? (
         <p className="text-gray-800">LOW</p>
       ) : level === "MEDIUM" ? (

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight, Rss } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayContent } from "./day-content";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,22 +9,18 @@ import {
   eachDayOfInterval,
   endOfMonth,
   format,
-  getDay,
   parse,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { Prisma } from "@prisma/client";
 import AppointmentsPanel from "./appointment-panel";
 import { useSearchParams } from "next/navigation";
-import { deleteAppointment } from "@/actions/appointment";
-import { useToast } from "@/hooks/use-toast";
+import type { Appointment } from "./appointment-view";
 
-export type APPOINTMENT = Prisma.AppointmentGetPayload<{
-  include: {
-    prospect: true;
-  };
-}>;
+type Props = {
+  appointments: Appointment[];
+  onDelete: (id: string) => Promise<void>;
+};
 
 const DAYS = [
   "Sunday",
@@ -36,33 +32,17 @@ const DAYS = [
   "Saturday",
 ];
 
-const Calendar = ({ appointments }: { appointments: APPOINTMENT[] }) => {
+const Calendar = ({ appointments, onDelete }: Props) => {
   const searchParams = useSearchParams();
   const selectedDate = searchParams.get("date");
-  const { toast } = useToast();
-  const [localAppointments, setLocalAppointments] =
-    React.useState(appointments);
+
   const [currentMonth, setCurrentMonth] = React.useState(
     format(new Date(), "MMM-yyyy")
   );
 
-  const selectedAppointments = localAppointments.filter(
+  const selectedAppointments = appointments.filter(
     (a) => a.scheduledFor.toLocaleDateString() === selectedDate
   );
-
-  const handleDeleteAppointment = async (appointmentId: string) => {
-    const res = await deleteAppointment(appointmentId);
-    if (res.status === 200) {
-      toast({ title: "Success", description: res.message });
-      setLocalAppointments((p) => p.filter((a) => a.id !== appointmentId));
-    } else {
-      toast({
-        title: "Error",
-        description: res.message,
-        variant: "destructive",
-      });
-    }
-  };
 
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
   const days = eachDayOfInterval({
@@ -104,7 +84,7 @@ const Calendar = ({ appointments }: { appointments: APPOINTMENT[] }) => {
             <DayContent
               key={dayIdx}
               day={day}
-              appointments={localAppointments.filter(
+              appointments={appointments.filter(
                 (a) =>
                   a.scheduledFor.toLocaleDateString() ===
                   day.toLocaleDateString()
@@ -112,10 +92,11 @@ const Calendar = ({ appointments }: { appointments: APPOINTMENT[] }) => {
             />
           ))}
         </div>
-        {!!selectedAppointments.length && (
+        {selectedDate && (
           <AppointmentsPanel
             selectedAppointments={selectedAppointments}
-            handleDeleteAppointment={handleDeleteAppointment}
+            handleDeleteAppointment={onDelete}
+            selectedDate={selectedDate}
           />
         )}
       </div>

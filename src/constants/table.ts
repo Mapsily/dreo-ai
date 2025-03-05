@@ -15,3 +15,13 @@ export const PRODUCT_HEADERS = [
   "Created At",
   "Action",
 ];
+
+export const APPINTMENT_HEADERS = [
+  "Name",
+  "Phone Number",
+  "Product interested",
+  "Interest level",
+  "Date & Time",
+  "Notes",
+  "Action",
+];

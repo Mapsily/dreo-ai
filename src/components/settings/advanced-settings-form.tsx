@@ -38,23 +38,6 @@ const AdvanceSettingsForm = ({
           control={control}
         />
       </InputContainer>
-
-      <InputContainer
-        label="Keywords"
-        direction="horizontal"
-        description="Define a list of keywords that have a higher likelihood of being predicted correctly."
-      >
-        <FormGenerator
-          name="keywords"
-          placeholder="Type keyword, Press enter"
-          register={register}
-          errors={errors}
-          inputType="chip"
-          type="text"
-          control={control}
-        />
-      </InputContainer>
-
       <InputContainer
         label="Time Zone"
         description="The time zone in which the agent will calls as per the start and end time setting."
@@ -81,9 +64,8 @@ const AdvanceSettingsForm = ({
           placeholder="Select time zone"
           register={register}
           errors={errors}
-          inputType="timepicker"
-          type="text"
-          control={control}
+          inputType="input"
+          type="number"
         />
       </InputContainer>
 
@@ -97,9 +79,8 @@ const AdvanceSettingsForm = ({
           placeholder="Select time zone"
           register={register}
           errors={errors}
-          inputType="timepicker"
-          type="text"
-          control={control}
+          inputType="input"
+          type="number"
         />
       </InputContainer>
     </form>

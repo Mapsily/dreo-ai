@@ -191,8 +191,8 @@ export async function fetchLastWeekCalls(clerkId: string) {
         },
       },
       status: true,
-      callEndAt: true,
-      callStartAt: true,
+      endAt: true,
+      startAt: true,
       notes: true,
     },
     orderBy: {

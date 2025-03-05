@@ -6,7 +6,7 @@ import InfoBar from "@/components/shared/infobar";
 import { fetchAnalytics } from "@/actions/analytic";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import OutreachSheet from "@/components/analytics/outreach-sheet";
+import OutreachSheet from "@/components/shared/outreach-sheet";
 import React from "react";
 import { getDirection } from "@/lib/utils";
 

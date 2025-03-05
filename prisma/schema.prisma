@@ -15,10 +15,12 @@ model User {
   clerkId      String        @unique
   phoneNumber  String?
   companyName  String?
+  isOnboarded  Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   products     Product[]
   prospects    Prospect[]
+  Tickets      Ticket[]
   setting      Setting?
   subscription Subscription?
 }
@@ -64,17 +66,17 @@ model Appointment {
 }
 
 model Conversation {
-  id          String              @id @default(uuid())
-  transcript  String
-  callStartAt DateTime
-  callEndAt   DateTime
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  notes       String
-  result      CONVERSATION_RESULT
-  status      CONVERSATION_STATUS @default(INPROGRESS)
-  prospectId  String
-  prospect    Prospect            @relation(fields: [prospectId], references: [id])
+  id             String              @id @default(uuid())
+  ultravoxCallId String              @unique
+  startAt        DateTime
+  endAt          DateTime
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  notes          String
+  result         CONVERSATION_RESULT
+  status         CONVERSATION_STATUS @default(INPROGRESS)
+  prospectId     String
+  prospect       Prospect            @relation(fields: [prospectId], references: [id])
 }
 
 model Subscription {
@@ -98,8 +100,10 @@ model Plan {
   minutes      Int
   duration     Int // in days
   perDay       Int
+  isPopular    Boolean        @default(false)
   autoRenew    Boolean
   Subscription Subscription[]
+  createdAt    DateTime       @default(now())
 }
 
 model Setting {
@@ -142,6 +146,40 @@ model AdvancedSetting {
   endAt                   Int      @default(18)
   updatedAt               DateTime @updatedAt
   setting                 Setting  @relation(fields: [settingId], references: [id])
+}
+
+// support ticket
+model Ticket {
+  id          String         @id @default(uuid()) @db.Uuid
+  status      TICKET_STATUS  @default(OPEN)
+  title       String
+  description String
+  category    ISSUE_CATEGORY @default(FEATURE)
+  createdAt   DateTime       @default(now())
+  userId      String         @db.Uuid
+  user        User           @relation(fields: [userId], references: [id])
+  responses   Response[]
+}
+
+// support ticket response by team
+model Response {
+  id          String @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  ticketId    String @db.Uuid
+  ticket      Ticket @relation(fields: [ticketId], references: [id])
+}
+
+enum ISSUE_CATEGORY {
+  TECHNICAL
+  FEATURE
+  PAYMENT
+}
+
+enum TICKET_STATUS {
+  OPEN
+  INPROGRESS
+  CLOSED
 }
 
 enum PLAN_STATUS {

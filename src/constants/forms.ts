@@ -26,3 +26,9 @@ export const USER_LOGIN_FORM: UserRegistrationProps[] = [
     label: "Password",
   },
 ];
+
+export const TICKET_CATEGORIES = [
+  { id: "TECHNICAL", value: "TECHNICAL", label: "Technical" },
+  { id: "FEATURE", value: "FEATURE", label: "Feature" },
+  { id: "PAYMENT", value: "PAYMENT", label: "Payment" },
+];

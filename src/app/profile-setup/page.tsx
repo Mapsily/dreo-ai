@@ -1,18 +1,17 @@
-import { getUser } from "@/actions/auth";
-import { getSettings } from "@/actions/setting";
 import ProfileSetupFormRenderer from "@/components/profile-setup/profile-setup-form-renderer";
 import { ProfileSetupContextProvider } from "@/context/profile-setup-provider";
 import { redirect } from "next/navigation";
+import { getUser, updateUser } from "@/actions/auth";
 
 export default async function ProfileSetupPage() {
-  const userRes = await getUser();
-  if (userRes.status !== 200 || !userRes.data) redirect("/auth/sign-in");
-  const res = await getSettings(userRes.data?.clerkId);
-  if (res.status === 200) redirect("/dashboard");
+  const res = await getUser();
+  if (res.status !== 200) redirect("/auth/sign-in");
+  if (res.data?.isOnboarded) redirect("/dashboard");
+  await updateUser({ isOnboarded: true });
 
   return (
     <ProfileSetupContextProvider>
-      <ProfileSetupFormRenderer user={userRes.data} />
+      <ProfileSetupFormRenderer user={res.data} />
     </ProfileSetupContextProvider>
   );
 }

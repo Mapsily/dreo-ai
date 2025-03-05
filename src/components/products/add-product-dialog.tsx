@@ -1,3 +1,9 @@
+"use client";
+
+import { useState, FormEvent, MouseEvent, useEffect } from "react";
+import { PlusCircle, Box } from "lucide-react";
+import { Product } from "@prisma/client";
+
 import {
   Dialog,
   DialogContent,
@@ -7,29 +13,53 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
-import { PlusCircle, UserPlus } from "lucide-react";
 import ProductForm from "./product-form";
+import { useProductContext } from "@/context/product-provider";
+import { useProductForm } from "@/hooks/product/use-product-form";
 
 export default function AddProductDialog() {
+  const { openAddDialog, closeAddProductDialog } = useProductContext();
+
+  const handleOpenChange = (value: boolean) => {
+    if (!value) closeAddProductDialog();
+  };
+
+  const handleSubmit = () => {
+    closeAddProductDialog();
+  };
+
+  const handleCancel = () => {
+    closeAddProductDialog();
+  };
+
   return (
-    <Dialog>
-      <DialogTrigger>
-        <Button variant="outline">
-          <PlusCircle /> Add new product
-        </Button>
-      </DialogTrigger>
+    <Dialog open={openAddDialog} onOpenChange={handleOpenChange}>
       <DialogContent className="bg-white">
         <DialogHeader className="flex flex-row gap-2 items-start">
-          <UserPlus size={24} />
+          <Box size={24} />
           <div>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogTitle>Add product/service</DialogTitle>
             <DialogDescription>
-              Add new prospect you want AI Agent to contact.
+              Add new product or service to your list.
             </DialogDescription>
           </div>
         </DialogHeader>
-        <ProductForm />
+        <ProductForm onSubmit={handleSubmit} onCancel={handleCancel} />
       </DialogContent>
     </Dialog>
+  );
+}
+
+export function AddProductDialogButton() {
+  const { openAddProductDialog } = useProductContext();
+
+  const hancleClick = () => {
+    openAddProductDialog();
+  };
+
+  return (
+    <Button onClick={hancleClick} variant="outline">
+      <PlusCircle /> Add new product
+    </Button>
   );
 }

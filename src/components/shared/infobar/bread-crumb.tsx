@@ -22,7 +22,13 @@ const BreadCrumb = () => {
           : page == "conversations"
           ? "Send bulk emails to your customers"
           : page == "products"
-          ? "Connect third-party applications into Corinna-AI"
+          ? "A list of all your products/services."
+          : page === "support"
+          ? "Your support home, raise a ticket and our team will resolve it."
+          : page === "plan"
+          ? "Check your subscribed plan details"
+          : page === "prospects"
+          ? "A list of all your contacts of the clients"
           : "Manage your dashboard preferences and settings."}
       </p>
     </div>

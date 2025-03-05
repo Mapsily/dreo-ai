@@ -1,9 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { BookMarked, PlusCircle } from "lucide-react";
+import { BookMarked, Delete, PlusCircle, Trash2 } from "lucide-react";
 import FormGenerator from "@/components/shared/form-generator";
-import { useProductForm } from "@/hooks/product/use-product-form";
 import {
   Table,
   TableBody,
@@ -14,23 +13,36 @@ import {
 } from "@/components/ui/table";
 import { PRODUCT_HEADERS } from "@/constants/table";
 import { Loader } from "@/components/shared/loader";
-import { useState } from "react";
+import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
+import { FormEvent } from "react";
+import { Prisma } from "@prisma/client";
 
-type PRODUCT = {
+type Product = {
   name: string;
   description: string;
   price: number;
 };
 
-export function AddProducts() {
-  const { errors, loading, onAdd, register, getValues } = useProductForm();
-  const [products, setProducts] = useState<PRODUCT[]>([]);
+type Props = {
+  register: UseFormRegister<Prisma.ProductCreateManyInput>;
+  errors: FieldErrors<FieldValues>;
+  loading: boolean;
+  products: Product[];
+  onAdd: () => Promise<void>;
+  onDelete: (productIdx: number) => void;
+};
 
-  const handleAdd = async (e) => {
+export function AddProducts({
+  errors,
+  register,
+  loading,
+  products,
+  onAdd,
+  onDelete,
+}: Props) {
+  const handleAdd = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await onAdd();
-    const product = getValues(["name", "description", "price"]);
-    setProducts((p) => [...p, product]);
   };
 
   return (
@@ -73,7 +85,12 @@ export function AddProducts() {
             register={register}
             type="number"
           />
-          <Button type="submit" variant="secondary" className="w-fit">
+          <Button
+            disabled={loading}
+            type="submit"
+            variant="secondary"
+            className="w-fit"
+          >
             <Loader loading={loading}>
               <PlusCircle /> Add
             </Loader>
@@ -90,14 +107,18 @@ export function AddProducts() {
           </TableRow>
         </TableHeader>
         <TableBody className="space-y-2">
-          {products.map((p) => (
-            <TableRow>
+          {products.map((p, idx) => (
+            <TableRow key={p.name}>
               <TableCell className="bg-gray-100 rounded-l-sm">
                 {p.name}
               </TableCell>
               <TableCell className="bg-gray-100">{p.description}</TableCell>
               <TableCell className="bg-gray-100">{p.price}</TableCell>
-              <TableCell className="bg-gray-100 rounded-r-sm">{""}</TableCell>
+              <TableCell className="bg-gray-100 rounded-r-sm">
+                <Button onClick={() => onDelete(idx)} variant="secondary">
+                  <Trash2 className="text-red-600" />
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

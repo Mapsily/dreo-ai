@@ -2,51 +2,111 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useToast } from "../use-toast";
+import { Prisma, Product } from "@prisma/client";
 import { useState } from "react";
-import { Prisma } from "@prisma/client";
-import { useUser } from "@clerk/nextjs";
-import { ProductInputSchema } from "@/schemas/product.schema";
-import { onAddProduct } from "@/actions/product";
 
-export const useProductForm = () => {
+import { useToast } from "../use-toast";
+import { ProductInputSchema } from "@/schemas/product.schema";
+import { addProducts, updateProduct } from "@/actions/product";
+import { getUser } from "@/actions/auth";
+
+export const useProductForm = (defaultValues: Product) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty, isSubmitSuccessful },
     getValues,
     reset,
-  } = useForm<Prisma.ProductCreateInput>({
+  } = useForm<Prisma.ProductCreateManyInput>({
     resolver: zodResolver(ProductInputSchema),
     mode: "onChange",
+    defaultValues,
   });
   const { toast } = useToast();
-  const { user } = useUser();
   const [loading, setLoading] = useState<boolean>(false);
+  const [products, setProducts] = useState<Prisma.ProductCreateManyInput[]>([]);
 
-  const onAdd = handleSubmit(async (values) => {
+  const onUpdate = handleSubmit(async (product) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const res = await onAddProduct({
-        ...values,
-        price: parseFloat(`${values.price}`),
-        user: { connect: { clerkId: user?.id } },
-      });
+      const res = await updateProduct(defaultValues.id, product);
       if (res.status === 200) {
-        reset();
         toast({ title: "Success", description: res.message });
-      } else {
-        toast({
-          title: "Error",
-          description: res.message,
-          variant: "destructive",
-        });
+        reset();
+        return;
       }
-      setLoading(false);
+      toast({
+        title: "Error",
+        description: res.message,
+        variant: "destructive",
+      });
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Error",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   });
+
+  const onDelete = (productIdx: number) => {
+    setProducts((prev) => prev.filter((p, idx) => idx !== productIdx));
+    toast({ title: "Success", description: "Product deleted" });
+  };
+
+  const onAdd = handleSubmit((product) => {
+    setProducts((p) => [...p, product]);
+    toast({ title: "Success", description: "Product added" });
+    reset();
+  });
+
+  const onAddSingle = handleSubmit(async (product) => {
+    await onSubmit(product);
+    reset();
+  });
+
+  const onSubmit = async (
+    product: Prisma.ProductCreateManyInput | undefined
+  ) => {
+    setLoading(true);
+    try {
+      const { data: user } = await getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "UnAuthorised",
+          variant: "destructive",
+        });
+        return;
+      }
+      const ps = [...products];
+      if (product) ps.push(product);
+      const finalProducts = ps.map((p) => ({
+        ...p,
+        userId: user.id,
+      }));
+      const res = await addProducts(finalProducts);
+      if (res.status === 200) {
+        toast({ title: "Success", description: res.message });
+        return;
+      }
+      toast({
+        title: "Error",
+        description: res.message,
+        variant: "destructive",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     register,
@@ -54,5 +114,12 @@ export const useProductForm = () => {
     onAdd,
     loading,
     getValues,
+    onSubmit,
+    products,
+    isDirty,
+    isSubmitSuccessful,
+    onDelete,
+    onAddSingle,
+    onUpdate,
   };
 };

@@ -27,3 +27,65 @@ export const getDirection = (value: number | undefined) => {
   if (!value) return "DEFAULT";
   return value > 0 ? "UP" : "DOWN";
 };
+
+export async function predictFields(data: Record<string, any>[]): Promise<{
+  headers: string[];
+  rows: Record<string, any>[];
+}> {
+  if (!data || data.length === 0) return { headers: [], rows: [] };
+
+  const headers = Object.keys(data[0]);
+  const predictedFields = headers.map((header) => {
+    const lowerHeader = header.toLowerCase();
+    if (lowerHeader.includes("name")) return "Name";
+    if (lowerHeader.includes("phone") || lowerHeader.includes("tel"))
+      return "Phone";
+    if (lowerHeader.includes("note")) return "Notes";
+    return "Unknown";
+  });
+
+  return {
+    headers: predictedFields,
+    rows: data,
+  };
+}
+
+export const validateProspectsFields = (
+  data: Record<string, any>[]
+): boolean => {
+  return data.every(
+    (obj) =>
+      // Check if 'name' and 'phone' exist and are not empty
+      obj.hasOwnProperty("name") &&
+      obj.hasOwnProperty("phone") &&
+      obj.name !== "" &&
+      obj.name !== null &&
+      obj.name !== undefined &&
+      obj.phone !== "" &&
+      obj.phone !== null &&
+      obj.phone !== undefined &&
+      // Check that all other fields also have values
+      Object.values(obj).every(
+        (value) => value !== "" && value !== null && value !== undefined
+      )
+  );
+};
+
+export const getDuration = (start: Date, end: Date) => {
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return "Invalid date";
+  }
+
+  let diff = Math.abs(end.getTime() - start.getTime()); // Difference in milliseconds
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  diff -= hours * (1000 * 60 * 60);
+
+  const minutes = Math.floor(diff / (1000 * 60));
+  diff -= minutes * (1000 * 60);
+
+  const seconds = Math.floor(diff / 1000);
+
+  return `${hours}h ${minutes}m ${seconds}s`;
+};
+

@@ -16,6 +16,19 @@ const AudioPlayer: React.FC<MusicPlayerProps> = ({ src }) => {
   const [duration, setDuration] = useState<number>(0);
 
   useEffect(() => {
+    if (audioRef.current && src) {
+      audioRef.current.load();
+      setIsPlaying(false);
+    }
+
+    return () => {
+      if (src) {
+        URL.revokeObjectURL(src);
+      }
+    };
+  }, [src]);
+
+  useEffect(() => {
     if (audioRef.current) {
       audioRef.current.addEventListener("loadedmetadata", () => {
         setDuration(audioRef.current?.duration || 0);
@@ -59,8 +72,9 @@ const AudioPlayer: React.FC<MusicPlayerProps> = ({ src }) => {
 
   return (
     <div className="rounded-lg w-80">
-      <audio ref={audioRef} src={src} onTimeUpdate={updateProgress} />
-
+      {src && (
+        <audio ref={audioRef} src={src} onTimeUpdate={updateProgress}/>
+      )}
       {/* Progress Bar with Time */}
       <div className="flex gap-1 items-center justify-between text-sm text-gray-600 mb-2">
         <span>{formatTime(currentTime)}</span>

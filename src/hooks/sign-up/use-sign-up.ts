@@ -29,10 +29,10 @@ export const useSignUpForm = () => {
         redirectUrl: "/dashboard",
         redirectUrlComplete: "/dashboard/analytics",
       });
-    } catch (error) {
+    } catch (err) {
       toast({
         title: "Error",
-        description: "Something went wrong",
+        description: (err as Error).message,
       });
     }
   };
@@ -63,7 +63,6 @@ export const useSignUpForm = () => {
 
   const onHandleSubmit = methods.handleSubmit(
     async (values: UserRegistrationProps) => {
-
       if (!isLoaded) return;
 
       try {
@@ -103,15 +102,18 @@ export const useSignUpForm = () => {
             toast({
               title: "Error",
               description: registered.message,
+              variant: "destructive",
             });
             setLoading(false);
           }
         }
-      } catch (error: any) {
+      } catch (error) {
         toast({
           title: "Error",
-          description: error.errors[0].longMessage,
+          description: "Please try again after some time",
+          variant: "destructive",
         });
+        setLoading(false)
       }
     }
   );

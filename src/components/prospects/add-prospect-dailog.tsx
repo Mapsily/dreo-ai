@@ -13,9 +13,9 @@ import ProspectForm from "./prospect-form";
 export default function AddProspectDialog() {
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="outline">
-          <PlusCircle /> Add new prospect
+          <PlusCircle /> Add manually
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-white">
