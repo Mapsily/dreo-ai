@@ -23,7 +23,7 @@ const ButtonHandler = () => {
       <>
         <Button className="w-full" type="submit">Verify</Button>
         <p className="text-sm text-gray-600 flex items-center">
-          Didn't received a code?
+          Didn&apos;t received a code?
           <Button variant="link" className="text-lime-600 hover:no-underline">
             Click here to resend
           </Button>

@@ -56,7 +56,7 @@ const FormGenerator = ({
   control,
   LeftIcon,
   RightIcon,
-  disabled
+  disabled,
 }: Props) => {
   switch (inputType) {
     case "input":

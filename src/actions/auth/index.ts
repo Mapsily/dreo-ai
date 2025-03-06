@@ -1,9 +1,10 @@
 "use server";
 
 import { client } from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { unstable_noStore as noStore } from "next/cache";
 
 export const onCompleteUserRegistration = async (
   firstName: string,
@@ -27,19 +28,18 @@ export const onCompleteUserRegistration = async (
 };
 
 export const getUser = async () => {
+  noStore()
   try {
-    const clerkUser = await currentUser();
-    if (!clerkUser) return { status: 404, data: null };
-
-    const authenticated = await client.user.findFirst({
+    const { userId } = await auth();
+    if (!userId) return { status: 404, data: null };
+    const user = await client.user.findUnique({
       where: {
-        clerkId: clerkUser.id,
+        clerkId: userId,
       },
     });
-
-    return { status: 200, data: authenticated };
+    return { status: 200, data: user };
   } catch (error) {
-    return { status: 500, data: null };
+    return { status: 500, error: (error as Error).message };
   }
 };
 

@@ -26,7 +26,7 @@ export default function SupportHeader() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, router, searchParams]);
 
   return (
     <div className="flex justify-between items-center">

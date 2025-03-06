@@ -65,7 +65,7 @@ export default function OutreachSheet() {
       setLoading(false);
     };
     if (openSheet) fetchProductsCount();
-  }, [isLoaded, user, openSheet]);
+  }, [isLoaded, user, openSheet, toast]);
 
   const handleBack = async () => {
     if (step === 4) setStep(2);
@@ -86,7 +86,7 @@ export default function OutreachSheet() {
       } catch (error) {
         toast({
           title: "Error",
-          description: "Something went wrong",
+          description: (error as Error).message,
           variant: "destructive",
         });
       }

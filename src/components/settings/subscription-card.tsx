@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import { useCreditContext } from "@/context/credit-provider";
 
-const SubscriptionCard = async () => {
+const SubscriptionCard = () => {
   const { subscription } = useCreditContext();
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { getVoices } from "@/actions/setting";
+import { getVoices } from "@/actions/ultravox";
 import FormGenerator from "@/components/shared/form-generator";
 import { Loader } from "@/components/shared/loader";
 import { Button } from "@/components/ui/button";

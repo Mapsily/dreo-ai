@@ -9,14 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 import { PROSPECTS_HEADERS } from "@/constants/table";
 import TagView from "../shared/tag-view";

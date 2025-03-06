@@ -7,7 +7,6 @@ import {
   FileText,
   MessageCircle,
   MonitorCog,
-  Settings,
   User,
 } from "lucide-react";
 import * as React from "react";

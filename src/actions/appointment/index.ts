@@ -19,7 +19,7 @@ export const getAppointments = async (clerkId: string) => {
     });
     return { status: 200, data: bookings };
   } catch (error) {
-    return { status: 500, message: "Error fetching appoinments" };
+    return { status: 500, message: (error as Error).message };
   }
 };
 
@@ -33,6 +33,6 @@ export const deleteAppointment = async (appointmentId: string) => {
     revalidatePath("/dashboard/appointments");
     return { status: 200, message: "Appointment deleted" };
   } catch (error) {
-    return { status: 500, message: "Error deleting appointment" };
+    return { status: 500, message: (error as Error).message };
   }
 };

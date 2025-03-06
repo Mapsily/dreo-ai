@@ -28,9 +28,9 @@ export const getDirection = (value: number | undefined) => {
   return value > 0 ? "UP" : "DOWN";
 };
 
-export async function predictFields(data: Record<string, any>[]): Promise<{
+export async function predictFields(data: Record<string, string>[]): Promise<{
   headers: string[];
-  rows: Record<string, any>[];
+  rows: Record<string, string>[];
 }> {
   if (!data || data.length === 0) return { headers: [], rows: [] };
 

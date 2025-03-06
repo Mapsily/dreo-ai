@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { onCompleteUserRegistration } from "@/actions/auth";
+import { ClerkAPIError } from "@clerk/types";
 
 export const useSignUpForm = () => {
   const { toast } = useToast();
@@ -51,10 +52,11 @@ export const useSignUpForm = () => {
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       onNext((prev) => prev + 1);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const clerkError = error as { errors?: ClerkAPIError[] };
       toast({
         title: "Error",
-        description: error.errors[0].longMessage,
+        description: clerkError?.errors?.[0].longMessage,
       });
     } finally {
       setLoading(false);
@@ -110,10 +112,10 @@ export const useSignUpForm = () => {
       } catch (error) {
         toast({
           title: "Error",
-          description: "Please try again after some time",
+          description: (error as Error).message,
           variant: "destructive",
         });
-        setLoading(false)
+        setLoading(false);
       }
     }
   );

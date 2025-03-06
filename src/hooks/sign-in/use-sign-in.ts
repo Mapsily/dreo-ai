@@ -2,6 +2,7 @@ import { useToast } from "@/hooks/use-toast";
 import { UserLoginProps, UserLoginSchema } from "@/schemas/auth.schema";
 import { useSignIn } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ClerkAPIError } from "@clerk/types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,9 +37,10 @@ export const useSignInForm = () => {
           });
           router.push("/dashboard");
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const clerkError = error as { errors?: ClerkAPIError[] };
         setLoading(false);
-        if (error.errors[0].code === "form_password_incorrect")
+        if (clerkError?.errors?.[0].code === "form_password_incorrect")
           toast({
             title: "Error",
             description: "email/password is incorrect try again",
@@ -58,7 +60,8 @@ export const useSignInForm = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Something went wrong",
+        description: (error as Error).message,
+        variant:"destructive"
       });
     }
   };

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { format, isToday } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { Appointment } from "./calendar";
+import type { Appointment } from "./appointment-view";
 
 interface DayContentProps {
   day: Date;

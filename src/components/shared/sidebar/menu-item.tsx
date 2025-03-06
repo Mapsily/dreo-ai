@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import React, { JSX } from "react";
+import React from "react";
 
 type Props = {
   label: string;

@@ -1,5 +1,4 @@
 import { BookMarked, FileUp, Keyboard } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
 
 type Props = {
   onSelect: (type: "manual" | "upload") => void;

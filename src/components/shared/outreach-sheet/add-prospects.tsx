@@ -102,7 +102,7 @@ export function AddProspects({
         </TableHeader>
         <TableBody className="space-y-2">
           {prospects.map((p, idx) => (
-            <TableRow>
+            <TableRow key={idx}>
               <TableCell className="bg-gray-100 rounded-l-sm">
                 {p.name}
               </TableCell>

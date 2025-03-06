@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Trash2, PencilLine, FilePen } from "lucide-react";
 import {
@@ -24,7 +24,7 @@ const REQUIRED_HEADERS = ["Name", "Phone", "Notes"];
 
 interface PredictedData {
   headers: string[];
-  rows: Record<string, any>[];
+  rows: Record<string, string>[];
 }
 
 interface Props {
@@ -44,18 +44,13 @@ export default function EditProspectsTable({
     rowIdx: number;
     colIdx: number;
   } | null>(null);
-  const [cellValues, setCellValues] = useState<Record<string, any>[]>([
+  const [cellValues, setCellValues] = useState<Record<string, string>[]>([
     ...predictedData.rows,
   ]);
   const [editValue, setEditValue] = useState<string>("");
   const rows = predictedData.rows;
 
-  useEffect(() => {
-    validateData();
-    setPredictedData({ headers, rows: cellValues });
-  }, [headers, cellValues]);
-
-  const validateData = () => {
+  const validateData = useCallback(() => {
     const newErrors: Record<string, boolean> = {};
 
     const missingHeaders = REQUIRED_HEADERS.filter(
@@ -86,7 +81,12 @@ export default function EditProspectsTable({
 
     setErrorsState(newErrors);
     setErrors(newErrors);
-  };
+  }, [setErrorsState, setErrors, headers, cellValues]);
+
+  useEffect(() => {
+    validateData();
+    setPredictedData({ headers, rows: cellValues });
+  }, [headers, cellValues, setPredictedData, validateData]);
 
   const startEditing = (
     rowIdx: number,
@@ -217,9 +217,7 @@ export default function EditProspectsTable({
             return <p>{errorsState[h] && `*${h} column required`}</p>;
           }
         })}
-        {!!Object.keys(errorsState).length && (
-          <p>*Fix column fields</p>
-        )}
+        {!!Object.keys(errorsState).length && <p>*Fix column fields</p>}
       </div>
     </div>
   );

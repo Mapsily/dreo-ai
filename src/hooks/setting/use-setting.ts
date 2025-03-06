@@ -13,7 +13,6 @@ import {
   ChangePasswordInputSchema,
   ScriptSettingsSchema,
 } from "@/schemas/setting.schema";
-import { useUser } from "@clerk/nextjs";
 import { ClerkAPIError } from "@clerk/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -81,13 +80,9 @@ export const useChangePassword = () => {
     mode: "onChange",
   });
   const { toast } = useToast();
-  const { isLoaded, user } = useUser();
   const [loading, setLoading] = useState<boolean>(false);
 
   const onUpdate = handleSubmit(async (values) => {
-    if (!isLoaded) {
-      return;
-    }
     setLoading(true);
     try {
       const res = await onUpdatePassword(values.newPassword);

@@ -18,7 +18,7 @@ export default function CreditUpdater({ subscription }: Props) {
   useEffect(() => {
     if (!subscription) return;
     setSubscription(subscription);
-  }, [subscription]);
+  }, [subscription,setSubscription]);
 
   return null
 }

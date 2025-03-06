@@ -7,9 +7,7 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import { useSignInForm } from "@/hooks/sign-in/use-sign-in";
 
-type Props = {};
-
-const LoginForm = (props: Props) => {
+const LoginForm = () => {
   const {
     register,
     formState: { errors },

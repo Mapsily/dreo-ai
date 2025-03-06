@@ -10,7 +10,7 @@ const PlanPage = async () => {
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/");
   const { data: subscription } = await getSubscription(clerkUser.id);
-  const { data: plans } = await getPlans(clerkUser.id);
+  const { data: plans } = await getPlans();
 
   return (
     <div className="p-8">

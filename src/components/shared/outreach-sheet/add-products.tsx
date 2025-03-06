@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { BookMarked, Delete, PlusCircle, Trash2 } from "lucide-react";
+import { BookMarked, PlusCircle, Trash2 } from "lucide-react";
 import FormGenerator from "@/components/shared/form-generator";
 import {
   Table,

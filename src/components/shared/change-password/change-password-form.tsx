@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactEventHandler } from "react";
+import React, { FormEvent } from "react";
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
 import FormGenerator from "../form-generator";
 import { Button } from "@/components/ui/button";

@@ -14,20 +14,22 @@ import { getDirection } from "@/lib/utils";
 const AnalyticsPage = async () => {
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/");
+  const { data } = await fetchAnalytics(clerkUser.id);
+  if (!data) {
+    return null;
+  }
   const {
-    data: {
-      todayCallCount,
-      callCTY,
-      appointmentCTY,
-      todayAppointmentCount,
-      conversionCTY,
-      todayConversionRate,
-      activeProspectCTY,
-      todayActiveProspect,
-      todaysAppointments,
-      lastWeekCalls,
-    },
-  } = await fetchAnalytics(clerkUser.id);
+    activeProspectCTY,
+    appointmentCTY,
+    callCTY,
+    conversionCTY,
+    lastWeekCalls,
+    todayActiveProspect,
+    todayAppointmentCount,
+    todayCallCount,
+    todayConversionRate,
+    todaysAppointments,
+  } = data;
 
   return (
     <div className="w-full flex-1 p-8">

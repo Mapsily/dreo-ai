@@ -263,20 +263,21 @@ export async function fetchAnalytics(clerkId: string) {
       conversionRate.yesterdayConversionRate
     );
 
-    const data = {
-      todayCallCount: conversations.todayCallCount,
-      callCTY: conversations.cty,
-      todayAppointmentCount: appointments.todayAppointmentCount,
-      appointmentCTY: appointments.cty,
-      todayConversionRate,
-      conversionCTY,
-      todayActiveProspect: activeProspect.todayActiveProspectCount,
-      activeProspectCTY: activeProspect.cty,
-      lastWeekCalls,
-      todaysAppointments,
+    return {
+      status: 200,
+      data: {
+        todayCallCount: conversations.todayCallCount,
+        callCTY: conversations.cty,
+        todayAppointmentCount: appointments.todayAppointmentCount,
+        appointmentCTY: appointments.cty,
+        todayConversionRate,
+        conversionCTY,
+        todayActiveProspect: activeProspect.todayActiveProspectCount,
+        activeProspectCTY: activeProspect.cty,
+        lastWeekCalls,
+        todaysAppointments,
+      },
     };
-
-    return { status: 200, data };
   } catch (error) {
     return { state: 500, error: (error as Error).message };
   }

@@ -13,7 +13,7 @@ import { Loader } from "../loader";
 
 interface PredictedData {
   headers: string[];
-  rows: Record<string, any>[];
+  rows: Record<string, string>[];
 }
 
 type Props = {
@@ -21,7 +21,9 @@ type Props = {
 };
 
 export default function UploadProspects({ setProspects }: Props) {
-  const [predictedData, setPredictedData] = useState<PredictedData | null>(null);
+  const [predictedData, setPredictedData] = useState<PredictedData | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
@@ -45,8 +47,8 @@ export default function UploadProspects({ setProspects }: Props) {
     });
     if (Object.keys(errors).length === 0) {
       setProspects(finalProspects);
-    }else setProspects([]);
-  }, [predictedData, errors]);
+    } else setProspects([]);
+  }, [predictedData, errors, setProspects]);
 
   const handleUpload = async (file: File | null) => {
     if (!file) return;
@@ -60,10 +62,18 @@ export default function UploadProspects({ setProspects }: Props) {
         setPredictedData(res.data);
         toast({ title: "Success", description: "File uploaded successfully" });
       } else {
-        toast({ title: "Error", description: res.message, variant: "destructive" });
+        toast({
+          title: "Error",
+          description: res.message,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -77,7 +87,9 @@ export default function UploadProspects({ setProspects }: Props) {
             <FileUp />
             <span>
               <h3 className="font-medium mb-1">Upload Excel, CSV</h3>
-              <p className="text-sm text-gray-400 mb-4">Upload a file to add prospects automatically.</p>
+              <p className="text-sm text-gray-400 mb-4">
+                Upload a file to add prospects automatically.
+              </p>
             </span>
           </div>
           <Loader loading={loading}>
@@ -85,7 +97,11 @@ export default function UploadProspects({ setProspects }: Props) {
           </Loader>
         </>
       ) : (
-        <EditProspectsTable predictedData={predictedData} setPredictedData={setPredictedData} setErrors={setErrors} />
+        <EditProspectsTable
+          predictedData={predictedData}
+          setPredictedData={setPredictedData}
+          setErrors={setErrors}
+        />
       )}
     </div>
   );

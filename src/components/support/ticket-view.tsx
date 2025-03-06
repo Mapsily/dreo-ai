@@ -43,7 +43,7 @@ export default function TicketView({ tickets }: Props) {
 
   const selectedTicket = useMemo(() => {
     return tickets.find((t) => t.id === selectedTicketId);
-  }, [selectedTicketId]);
+  }, [selectedTicketId,tickets]);
 
   return (
     <div className="flex justify-between gap-2">
