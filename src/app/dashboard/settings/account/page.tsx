@@ -10,14 +10,13 @@ import React from "react";
 const Settings = async () => {
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/");
-  const accountRes = await getAccountSettings(clerkUser.id);
-  const subscriptionRes = await getSubscription(clerkUser.id);
+  const { data: accounts } = await getAccountSettings(clerkUser.id);
 
   return (
     <div className="flex flex-col gap-8 w-2/3">
-      <UserProfileForm defaultValues={accountRes.data} />
+      <UserProfileForm defaultValues={accounts} />
       <ChangePassword />
-      <SubscriptionCard subscription={subscriptionRes.data} />
+      <SubscriptionCard />
     </div>
   );
 };

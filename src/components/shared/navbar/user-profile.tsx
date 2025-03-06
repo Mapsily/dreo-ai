@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUser } from "@/actions/auth";
 import LogoutButton from "./logout-button";
+import Link from "next/link";
 
 export default async function UserProfile() {
   const res = await getUser();
@@ -17,7 +18,9 @@ export default async function UserProfile() {
           {`${res.data?.firstName}`.toLocaleUpperCase()[0]}
         </AvatarFallback>
       </Avatar>
-      {res.data?.firstName} {res.data?.lastName}
+      <Link href="/dashboard/settings/account">
+        {res.data?.firstName} {res.data?.lastName}
+      </Link>
       <LogoutButton />
     </div>
   );

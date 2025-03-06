@@ -88,7 +88,7 @@ model Subscription {
   minutesLeft  Int         @default(0)
   expiresAt    DateTime
   autoRenew    Boolean     @default(false)
-  status       PLAN_STATUS
+  status       PLAN_STATUS @default(ACTIVE)
   dailyUsed    Int         @default(0)
   lastUsedDate DateTime    @default(now())
 }

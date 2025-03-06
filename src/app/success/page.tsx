@@ -1,10 +1,12 @@
-import { getUser, onOnboardingSkip } from "@/actions/auth";
-import { setupDefaultSettings } from "@/actions/setting";
-import { Button } from "@/components/ui/button";
 import { BarChart, Bot, Check, Clock, Phone } from "lucide-react";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+
+import { getUser, onOnboardingSkip } from "@/actions/auth";
+import { setupDefaultSettings } from "@/actions/setting";
+import { Button } from "@/components/ui/button";
+import { createSubscription } from "@/actions/plan";
 
 const FEATURES = [
   { text: "Everything in Starter +", Icon: Check },
@@ -14,11 +16,17 @@ const FEATURES = [
   { text: "1000 Minutes", Icon: Clock },
 ];
 
-export default async function SuccessPage() {
+type Props = {
+  searchParams: Promise<{ planId: string | undefined }>;
+};
+
+export default async function SuccessPage({ searchParams }: Props) {
   const res = await getUser();
   if (res.status !== 200) redirect("/auth/sign-in");
   if (res.data?.isOnboarded) redirect("/dashboard");
+  const { planId } = await searchParams;
   await setupDefaultSettings();
+  await createSubscription(planId || (process.env.DEFAULT_PLAN_ID as string));
 
   return (
     <div className="min-h-screen bg-gray-50 w-full flex flex-col items-center justify-center">
@@ -51,7 +59,9 @@ export default async function SuccessPage() {
             <Link href="/profile-setup">Profile Setup</Link>
           </Button>
           <form action={onOnboardingSkip}>
-            <Button type="submit" variant="outline">Go to dashboard</Button>
+            <Button type="submit" variant="outline">
+              Go to dashboard
+            </Button>
           </form>
         </div>
       </div>

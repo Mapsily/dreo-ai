@@ -37,7 +37,7 @@ const ProspectsTable = ({ prospects }: { prospects: Prospect[] }) => {
       </TableHeader>
       <TableBody>
         {prospects.map((p) => (
-          <TableRow>
+          <TableRow key={p.id}>
             <TableCell>{p.name}</TableCell>
             <TableCell>{p.phone}</TableCell>
             <TableCell>{p.notes || "N/A"}</TableCell>

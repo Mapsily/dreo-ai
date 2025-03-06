@@ -1,5 +1,8 @@
+
 import { useRouter } from "next/navigation";
 import React from "react";
+
+import { useCreditContext } from "@/context/credit-provider";
 
 type Props = {
   min: boolean;
@@ -7,6 +10,7 @@ type Props = {
 
 export const CreditProgress = ({ min = false }: Props) => {
   const router = useRouter();
+  const { subscription } = useCreditContext();
 
   const handleClick = () => {
     router.push("/dashboard/plan");
@@ -20,10 +24,14 @@ export const CreditProgress = ({ min = false }: Props) => {
       } w-full p-2 rounded-sm bg-lime-200`}
     >
       {!min && <p className="text-xs font-light">Credits</p>}
-      <h2 className="font-semibold text-xl">{min ? "*" : "* 1050 min"}</h2>
+      <h2 className="font-semibold text-xl">
+        {min ? "*" : `* ${subscription?.minutesLeft} min`}
+      </h2>
       <div className="flex flex-col">
         <div className="flex flex-wrap justify-center text-sm">
-          30 {min && <br />} <span>/120</span> {min ? "" : "min used today"}
+          {subscription?.dailyUsed}/ {min && <br />}
+          <span>{subscription?.plan.perDay}</span>{" "}
+          {min ? "" : " min used today"}
         </div>
       </div>
     </div>

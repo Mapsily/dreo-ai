@@ -1,18 +1,12 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
 import { Button } from "../ui/button";
-import { Prisma } from "@prisma/client";
+import { useCreditContext } from "@/context/credit-provider";
 
-export type Subscription = Prisma.SubscriptionGetPayload<{
-  include: {
-    plan: true;
-  };
-}>;
+const SubscriptionCard = async () => {
+  const { subscription } = useCreditContext();
 
-const SubscriptionCard = async ({
-  subscription,
-}: {
-  subscription?: Subscription | null;
-}) => {
   return (
     <div>
       <h3 className="mb-2 text-sm font-medium">Subscription</h3>
