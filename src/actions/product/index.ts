@@ -19,6 +19,21 @@ export const getProducts = async (clerkId: string) => {
   }
 };
 
+export const getProductsCount = async (clerkId: string) => {
+  try {
+    const products = await client.product.count({
+      where: {
+        user: {
+          clerkId,
+        },
+      },
+    });
+    return { status: 200, data: products };
+  } catch (error) {
+    return { status: 500, error: "Error fetching products count" };
+  }
+};
+
 export const addProducts = async (data: Prisma.ProductCreateManyInput[]) => {
   try {
     await client.product.createMany({ data });

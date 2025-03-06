@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, ChevronLeft, PhoneForwarded } from "lucide-react";
 import {
   Sheet,
@@ -12,15 +12,15 @@ import { Button } from "@/components/ui/button";
 import ProgressView from "@/components/shared/progress-view";
 import { AddProducts } from "./add-products";
 import { AddProspects } from "./add-prospects";
-import TimeSelector from "./time-selector";
 import { useProductForm } from "@/hooks/product/use-product-form";
 import { useProspectForm } from "@/hooks/prospect/use-prospect-form";
 import { Loader } from "../loader";
 import ProspectAddSelector from "./prospect-add-selector";
 import UploadProspects from "../upload-prospects";
-import { validateProspectsFields } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useOutreachContext } from "@/context/outreach-provider";
+import { getProductsCount } from "@/actions/product";
+import { useUser } from "@clerk/nextjs";
 
 export default function OutreachSheet() {
   const {
@@ -31,6 +31,7 @@ export default function OutreachSheet() {
     onDelete: productOnDelete,
     onSubmit: productOnSubmit,
     products,
+    setProducts,
   } = useProductForm();
   const {
     errors: prospectErrors,
@@ -43,7 +44,28 @@ export default function OutreachSheet() {
     setProspects,
   } = useProspectForm();
   const { openSheet, closeOutreachSheet } = useOutreachContext();
+  const [loading, setLoading] = useState(false);
+  const [productsCount, setProductsCount] = useState(0);
   const [step, setStep] = useState(1);
+  const { user, isLoaded } = useUser();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+    const fetchProductsCount = async () => {
+      setLoading(true);
+      const res = await getProductsCount(user?.id);
+      if (res.data) setProductsCount(res.data);
+      else
+        toast({
+          title: "Error",
+          description: res.error,
+          variant: "destructive",
+        });
+      setLoading(false);
+    };
+    if (openSheet) fetchProductsCount();
+  }, [isLoaded, user, openSheet]);
 
   const handleBack = async () => {
     if (step === 4) setStep(2);
@@ -51,12 +73,24 @@ export default function OutreachSheet() {
   };
 
   const handleNext = async () => {
-    if (step === 5) {
-      await productOnSubmit();
-      await prospectOnSubmit();
-    }
-    if (step === 3) setStep(5);
-    else setStep(step + 1);
+    if (step === 3 || step === 4) {
+      try {
+        if (productsCount === 0) await productOnSubmit();
+        await prospectOnSubmit();
+        toast({
+          title: "Success",
+          description: "Outreach launched successfully",
+        });
+        handleChange(false);
+        return;
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Something went wrong",
+          variant: "destructive",
+        });
+      }
+    } else setStep(step + 1);
   };
 
   const handleSelect = async (type: "manual" | "upload") => {
@@ -65,8 +99,36 @@ export default function OutreachSheet() {
   };
 
   const handleChange = (value: boolean) => {
-    if (!value) closeOutreachSheet();
+    if (!value) {
+      setProspects([]);
+      setProducts([]);
+      setStep(1);
+      closeOutreachSheet();
+    }
   };
+
+  const isDisabled = useMemo(() => {
+    if (productLoading || prospectLoading || loading) return true;
+    if (step === 1) {
+      if (productsCount > 0) return false;
+      else {
+        return !products.length;
+      }
+    } else if (step === 3 || step === 4) return !prospects.length;
+  }, [
+    productLoading,
+    prospectLoading,
+    loading,
+    prospects.length,
+    products.length,
+    step,
+    productsCount,
+  ]);
+
+  const indicatorStep = useMemo(() => {
+    if (step === 2 || step === 3 || step === 4) return 2;
+    return step;
+  }, [step]);
 
   return (
     <Sheet open={openSheet} onOpenChange={handleChange}>
@@ -78,12 +140,18 @@ export default function OutreachSheet() {
             </Button>
           )}
           <Button
-            disabled={productLoading || prospectLoading}
+            disabled={isDisabled}
             className="!mt-0 w-fit"
             onClick={handleNext}
           >
             <Loader loading={productLoading || prospectLoading}>
-              Next <ChevronRight />
+              {step === 3 || step === 4 ? (
+                "Launch"
+              ) : (
+                <>
+                  Next <ChevronRight />
+                </>
+              )}
             </Loader>
           </Button>
         </SheetHeader>
@@ -92,7 +160,7 @@ export default function OutreachSheet() {
             Start Oureach
           </SheetTitle>
           <ProgressView
-            currentStep={step}
+            currentStep={indicatorStep}
             steps={["Add Products", "Add Prospects"]}
           />
           <div className="w-full">
@@ -109,17 +177,17 @@ export default function OutreachSheet() {
               <ProspectAddSelector onSelect={handleSelect} />
             ) : step === 3 ? (
               <UploadProspects setProspects={setProspects} />
-            ) : step === 4 ? (
-              <AddProspects
-                errors={prospectErrors}
-                loading={prospectLoading}
-                onAdd={prospectOnAdd}
-                onDelete={prospectOnDelete}
-                prospects={prospects}
-                register={prospectRegister}
-              />
             ) : (
-              <TimeSelector />
+              step === 4 && (
+                <AddProspects
+                  errors={prospectErrors}
+                  loading={prospectLoading}
+                  onAdd={prospectOnAdd}
+                  onDelete={prospectOnDelete}
+                  prospects={prospects}
+                  register={prospectRegister}
+                />
+              )
             )}
           </div>
         </div>

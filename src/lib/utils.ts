@@ -50,26 +50,6 @@ export async function predictFields(data: Record<string, any>[]): Promise<{
   };
 }
 
-export const validateProspectsFields = (
-  data: Record<string, any>[]
-): boolean => {
-  return data.every(
-    (obj) =>
-      // Check if 'name' and 'phone' exist and are not empty
-      obj.hasOwnProperty("name") &&
-      obj.hasOwnProperty("phone") &&
-      obj.name !== "" &&
-      obj.name !== null &&
-      obj.name !== undefined &&
-      obj.phone !== "" &&
-      obj.phone !== null &&
-      obj.phone !== undefined &&
-      // Check that all other fields also have values
-      Object.values(obj).every(
-        (value) => value !== "" && value !== null && value !== undefined
-      )
-  );
-};
 
 export const getDuration = (start: Date, end: Date) => {
   if (isNaN(start.getTime()) || isNaN(end.getTime())) {

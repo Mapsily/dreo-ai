@@ -122,5 +122,6 @@ export const useProductForm = (defaultValues?: Product) => {
     onDelete,
     onAddSingle,
     onUpdate,
+    setProducts
   };
 };
