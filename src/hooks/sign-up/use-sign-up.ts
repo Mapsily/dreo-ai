@@ -1,16 +1,18 @@
 "use client";
+
+import { useSignUp } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ClerkAPIError } from "@clerk/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
 import { useToast } from "@/hooks/use-toast";
 import {
   UserRegistrationProps,
   UserRegistrationSchema,
 } from "@/schemas/auth.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useSignUp } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { onCompleteUserRegistration } from "@/actions/auth";
-import { ClerkAPIError } from "@clerk/types";
+import { register } from "@/actions/auth";
 
 export const useSignUpForm = () => {
   const { toast } = useToast();
@@ -27,8 +29,8 @@ export const useSignUpForm = () => {
     try {
       await signUp.authenticateWithRedirect({
         strategy: "oauth_google",
-        redirectUrl: "/dashboard",
-        redirectUrlComplete: "/dashboard/analytics",
+        redirectUrl: "/google-auth",
+        redirectUrlComplete: "/google-auth",
       });
     } catch (err) {
       toast({
@@ -66,13 +68,11 @@ export const useSignUpForm = () => {
   const onHandleSubmit = methods.handleSubmit(
     async (values: UserRegistrationProps) => {
       if (!isLoaded) return;
-
       try {
         setLoading(true);
         const completeSignUp = await signUp.attemptEmailAddressVerification({
           code: values.otp,
         });
-
         if (completeSignUp.status !== "complete") {
           setLoading(false);
           toast({
@@ -80,11 +80,8 @@ export const useSignUpForm = () => {
             description: "Something went wrong!",
           });
         }
-
-        if (completeSignUp.status == "complete") {
-          if (!signUp.createdUserId) return;
-
-          const registered = await onCompleteUserRegistration(
+        if (completeSignUp.status == "complete" && signUp.createdUserId) {
+          const registered = await register(
             values.firstName,
             values.lastName,
             values.email,
@@ -95,9 +92,7 @@ export const useSignUpForm = () => {
             await setActive({
               session: completeSignUp.createdSessionId,
             });
-
-            setLoading(false);
-            router.push("/success");
+            router.push("/plan-select");
           }
 
           if (registered?.status == 400) {
@@ -106,7 +101,6 @@ export const useSignUpForm = () => {
               description: registered.message,
               variant: "destructive",
             });
-            setLoading(false);
           }
         }
       } catch (error) {
@@ -115,6 +109,7 @@ export const useSignUpForm = () => {
           description: (error as Error).message,
           variant: "destructive",
         });
+      } finally {
         setLoading(false);
       }
     }

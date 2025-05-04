@@ -13,6 +13,43 @@ import {
   subWeeks,
 } from "date-fns";
 
+export async function fetchProspectAnalytics(clerkId: string) {
+  const todayProspectCount = await client.prospect.count({
+    where: {
+      user: {
+        clerkId,
+      },
+      createdAt: {
+        gte: startOfDay(new Date()),
+        lt: endOfDay(new Date()),
+      },
+    },
+  });
+
+  const yesterdayProspectCount = await client.prospect.count({
+    where: {
+      user: {
+        clerkId,
+      },
+      createdAt: {
+        gte: startOfYesterday(),
+        lt: endOfYesterday(),
+      },
+    },
+  });
+
+  // compare to yesterday percentage
+  const cty = calculatePercentageChange(
+    todayProspectCount,
+    yesterdayProspectCount
+  );
+
+  return {
+    todayProspectCount,
+    cty,
+  };
+}
+
 export async function fetchConversationAnalytics(clerkId: string) {
   const todayCallCount = await client.conversation.count({
     where: {
@@ -51,55 +88,13 @@ export async function fetchConversationAnalytics(clerkId: string) {
   };
 }
 
-export async function fetchAppointmentAnalytics(clerkId: string) {
-  const todayAppointmentCount = await client.appointment.count({
-    where: {
-      prospect: {
-        user: {
-          clerkId,
-        },
-      },
-      createdAt: {
-        gte: startOfDay(new Date()),
-        lt: endOfDay(new Date()),
-      },
-    },
-  });
-
-  const yesterdayAppointmentCount = await client.appointment.count({
-    where: {
-      prospect: {
-        user: {
-          clerkId,
-        },
-      },
-      createdAt: {
-        gte: startOfYesterday(),
-        lt: endOfYesterday(),
-      },
-    },
-  });
-
-  // compare to yesterday percentage
-  const cty = calculatePercentageChange(
-    todayAppointmentCount,
-    yesterdayAppointmentCount
-  );
-
-  return {
-    todayAppointmentCount,
-    cty,
-  };
-}
-
 export async function fetchConversionRateAnalytics(clerkId: string) {
-  const yesterdayAppointmentCount = await client.appointment.count({
+  const yesterdayPassedCount = await client.prospect.count({
     where: {
-      prospect: {
-        user: {
-          clerkId,
-        },
+      user: {
+        clerkId,
       },
+      status: "PASSED",
       createdAt: {
         gte: startOfYesterday(),
         lt: endOfYesterday(),
@@ -107,7 +102,7 @@ export async function fetchConversionRateAnalytics(clerkId: string) {
     },
   });
 
-  const yesterdayCallCount = await client.conversation.count({
+  const yesterdayConversationCount = await client.conversation.count({
     where: {
       prospect: {
         user: {
@@ -122,8 +117,8 @@ export async function fetchConversionRateAnalytics(clerkId: string) {
   });
 
   const yesterdayConversionRate = calculateConversationRate(
-    yesterdayAppointmentCount,
-    yesterdayCallCount
+    yesterdayPassedCount,
+    yesterdayConversationCount
   );
 
   return {
@@ -196,6 +191,7 @@ export async function fetchLastWeekCalls(clerkId: string) {
       endAt: true,
       startAt: true,
       notes: true,
+      result:true
     },
     orderBy: {
       createdAt: "desc",
@@ -205,30 +201,20 @@ export async function fetchLastWeekCalls(clerkId: string) {
   return calls;
 }
 
-export async function fetchTodaysAppointments(clerkId: string) {
-  const appointments = await client.appointment.findMany({
+export async function fetchTodaysPassedProspects(clerkId: string) {
+  const appointments = await client.prospect.findMany({
     where: {
-      scheduledFor: {
+      updatedAt: {
         gte: startOfDay(new Date()),
         lte: endOfDay(new Date()),
       },
-      prospect: {
-        user: {
-          clerkId,
-        },
+      user: {
+        clerkId,
       },
-    },
-    select: {
-      scheduledFor: true,
-      notes: true,
-      prospect: {
-        select: {
-          name: true,
-        },
-      },
+      status: "PASSED",
     },
     orderBy: {
-      scheduledFor: "asc",
+      updatedAt: "asc",
     },
   });
 
@@ -238,23 +224,23 @@ export async function fetchTodaysAppointments(clerkId: string) {
 export async function fetchAnalytics(clerkId: string) {
   try {
     const [
+      prospects,
       conversations,
-      appointments,
       conversionRate,
       activeProspect,
       lastWeekCalls,
-      todaysAppointments,
+      todaysPassedProspects,
     ] = await Promise.all([
+      fetchProspectAnalytics(clerkId),
       fetchConversationAnalytics(clerkId),
-      fetchAppointmentAnalytics(clerkId),
       fetchConversionRateAnalytics(clerkId),
       fetchActiveProspectAnalytics(clerkId),
       fetchLastWeekCalls(clerkId),
-      fetchTodaysAppointments(clerkId),
+      fetchTodaysPassedProspects(clerkId),
     ]);
 
     const todayConversionRate = calculateConversationRate(
-      appointments.todayAppointmentCount,
+      todaysPassedProspects.length,
       conversations.todayCallCount
     );
 
@@ -266,16 +252,16 @@ export async function fetchAnalytics(clerkId: string) {
     return {
       status: 200,
       data: {
+        todayProspectCount: prospects.todayProspectCount,
+        prospectCTY: prospects.cty,
         todayCallCount: conversations.todayCallCount,
         callCTY: conversations.cty,
-        todayAppointmentCount: appointments.todayAppointmentCount,
-        appointmentCTY: appointments.cty,
         todayConversionRate,
         conversionCTY,
         todayActiveProspect: activeProspect.todayActiveProspectCount,
         activeProspectCTY: activeProspect.cty,
         lastWeekCalls,
-        todaysAppointments,
+        todaysPassedProspects,
       },
     };
   } catch (error) {

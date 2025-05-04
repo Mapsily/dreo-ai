@@ -1,15 +1,16 @@
-import TestimonialCarousel from "@/components/shared/testimonial-carousel";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import React from "react";
+
+import TestimonialCarousel from "@/components/shared/testimonial-carousel";
 
 type Props = {
   children: React.ReactNode;
 };
 
-const Layout = async ({ children }: Props) => {
+export default async function Layout({ children }: Props) {
   const user = await currentUser();
-  if (user) redirect("/dashboard");
+  if (user) redirect("/dashboard/analytics");
 
   return (
     <div className="min-w-screen flex items-center justify-center bg-gray-50 p-16">
@@ -21,6 +22,4 @@ const Layout = async ({ children }: Props) => {
       </div>
     </div>
   );
-};
-
-export default Layout;
+}

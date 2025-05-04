@@ -18,7 +18,7 @@ export default function NavbarLink({ path, Icon }: Props) {
   return (
     <Link
       className={cn(
-        "flex gap-4 items-center p-2 rounded-md hover:text-black",
+        "flex gap-4 items-center py-2 rounded-md hover:text-black",
         current?.includes(path) ? "bg-primary" : "text-gray-600"
       )}
       href={path ? `/dashboard/${path}` : "#"}

@@ -1,25 +1,28 @@
 "use client";
+
 import React from "react";
 import { useFormContext } from "react-hook-form";
+import Image from "next/image";
+
 import FormGenerator from "@/components/shared/form-generator";
 import { USER_LOGIN_FORM } from "@/constants/forms";
 import { Button } from "../ui/button";
-import Image from "next/image";
 import { useSignInForm } from "@/hooks/sign-in/use-sign-in";
 
-const LoginForm = () => {
+export default function LoginForm() {
   const {
     register,
     formState: { errors },
   } = useFormContext();
   const { onGoogleAuth } = useSignInForm();
+
   return (
     <>
       <h2 className="md:text-3xl font-bold">Log In</h2>
       <p className="text-sm text-gray-600">
         Continue with your existing account
       </p>
-      <Button onClick={onGoogleAuth} variant="outline">
+      <Button type="button" onClick={onGoogleAuth} variant="outline">
         <Image
           src="/images/google.png"
           alt="google-logo"
@@ -42,6 +45,4 @@ const LoginForm = () => {
       ))}
     </>
   );
-};
-
-export default LoginForm;
+}

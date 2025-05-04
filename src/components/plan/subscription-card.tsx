@@ -35,7 +35,6 @@ const SubscriptionCard = async ({
             />
           </span>
         </div>
-        <Button variant="outline">Upgarde</Button>
       </Card>
     </div>
   );

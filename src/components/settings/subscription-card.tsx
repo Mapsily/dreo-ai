@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import { useCreditContext } from "@/context/credit-provider";
+import Link from "next/link";
 
 const SubscriptionCard = () => {
   const { subscription } = useCreditContext();
@@ -22,7 +23,9 @@ const SubscriptionCard = () => {
             </p>
           </span>
         </div>
-        <Button variant="outline">Upgarde</Button>
+        <Button variant="outline" asChild>
+          <Link href="/dashboard/plan">Upgarde</Link>
+        </Button>
       </Card>
     </div>
   );

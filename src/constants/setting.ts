@@ -42,21 +42,43 @@ export const LANGUAGES = [
 
 export const SETTING_STEPS = ["ACCOUNT", "AI AGENT", "SCRIPT", "ADVANCED"];
 
+const DEFAULT_KNOWLEDGE_BASE =
+  "We are a leading real estate firm with a strong track record of helping property owners sell their properties quickly and efficiently. Our experienced team specializes in matching sellers with the right buyers, ensuring a smooth transaction process. With our deep market knowledge and personalized approach, we help homeowners maximize their property value.";
+
+const DEFAULT_INITIAL_SCRIPT =
+  "Hello, this is krishna calling on behalf of [Company Name]. I wanted to check if you’ve considered selling or renting your property. Right now, the market is strong, and we have buyers actively looking. Would you be open to discussing your options?";
+
+const DEFAULT_FOLLOWUP_SCRIPT =
+  "Hi [Seller Name], I wanted to follow up on our last conversation about your property. We’re seeing a lot of interest in homes like yours, and I’d love to help you explore the best possible deal. Do you have time for a quick chat?";
+
+const DEFAULT_QUALIFICATION_QUESTIONS = [
+  "Have you thought about selling your property in the near future?",
+  "If so, what’s your timeline for selling?",
+  "Are there any specific factors motivating you to sell?",
+  "Would you be open to an evaluation to determine the best possible price?",
+  "Have you spoken with any other agents about selling?",
+];
+
+const DEFAULT_FIRST_MESSAGE = "Hello, this is krishna from [Company Name]";
+
+const DEFAULT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 export const DEFAULT_SETTINGS = {
   agent: {
     language: "en",
-    firstMessage: "Hello",
-    knowledgeBase: "",
+    firstMessage: DEFAULT_FIRST_MESSAGE,
+    knowledgeBase: DEFAULT_KNOWLEDGE_BASE,
     voice: "Mark",
   },
   script: {
-    initial: "Hii there",
-    followUp: "Hello, as we discussed",
+    initial: DEFAULT_INITIAL_SCRIPT,
+    followUp: DEFAULT_FOLLOWUP_SCRIPT,
   },
   advanced: {
+    questions: DEFAULT_QUALIFICATION_QUESTIONS,
     maxConversationDuration: "300s",
-    timeZone: "Asia/Kolkata",
-    startAt: 9,
-    endAt: 18,
+    timeZone: DEFAULT_TIMEZONE,
+    startAt: "9",
+    endAt: "18",
   },
 };

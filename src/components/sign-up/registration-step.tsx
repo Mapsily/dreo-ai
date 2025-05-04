@@ -3,13 +3,14 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import dynamic from "next/dynamic";
+
 import { Spinner } from "@/components/shared/loader/spinner";
 import { useAuthContext } from "@/context/auth-provider";
 import DetailForm from "./account-details-form";
 
 const OTPForm = dynamic(() => import("./otp-form"), {
   ssr: false,
-  loading: Spinner,
+  loading: () => <Spinner />,
 });
 
 const RegistrationFormStep = () => {

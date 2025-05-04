@@ -27,7 +27,7 @@ export const PLANS_FEATURES = [
     ],
   },
   {
-    id: "95b39a14-5b36-42ea-acb8-b9792a0adb62",
+    id: "bdb8dbbb-2f7b-4f54-a323-dd03d86e587a",
     Icon: Laptop,
     features: [
       { text: "100 AI outreach calls/month", Icon: Phone },

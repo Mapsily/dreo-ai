@@ -25,7 +25,7 @@ export const getPropects = async (clerkId: string) => {
 export const addProspects = async (data: Prisma.ProspectCreateManyInput[]) => {
   try {
     await client.prospect.createMany({ data });
-    revalidatePath("/dashboard/prospects");
+    revalidatePath("/dashboard");
     return { status: 200, message: "Prospects added" };
   } catch (error) {
     return { status: 500, error: "Error adding prospects" };
@@ -39,16 +39,28 @@ export const deleteProspect = async (prospectId: string) => {
         prospectId,
       },
     });
-    await client.appointment.deleteMany({
-      where: {
-        prospectId,
-      },
-    });
     await client.prospect.delete({ where: { id: prospectId } });
-    revalidatePath("/dashboard/prospects");
+    revalidatePath("/dashboard");
     return { status: 200, message: "Prospect deleted" };
   } catch (error) {
     return { status: 500, error: "Error deleting prospect" };
+  }
+};
+
+export const getOutreachStatus = async (clerkId: string) => {
+  try {
+    const count = await client.prospect.count({
+      where: {
+        user: { clerkId },
+        status: {
+          in: ["INITIAL", "RESCHEDULED", "SCHEDULED"],
+        },
+      },
+    });
+    const data = count > 0;
+    return { status: 200, data };
+  } catch (error) {
+    return { status: 500, data: false };
   }
 };
 

@@ -50,7 +50,6 @@ export async function predictFields(data: Record<string, string>[]): Promise<{
   };
 }
 
-
 export const getDuration = (start: Date, end: Date) => {
   if (isNaN(start.getTime()) || isNaN(end.getTime())) {
     return "Invalid date";
@@ -69,3 +68,10 @@ export const getDuration = (start: Date, end: Date) => {
   return `${hours}h ${minutes}m ${seconds}s`;
 };
 
+export function getDiscountedPrice(price: number, discountPercent: number) {
+  if (price < 0 || discountPercent < 0 || discountPercent > 100) {
+    return price;
+  }
+  let discountAmount = (price * discountPercent) / 100;
+  return Math.ceil(price - discountAmount);
+}

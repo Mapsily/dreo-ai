@@ -34,9 +34,19 @@ export const ScriptSettingsSchema = z.object({
 });
 
 export const AdvancedSettingsSchema = z.object({
+  questions: z.string().array(),
   maxConversationDuration: z.string(),
-  keywords: z.array(z.string()),
   timeZone: z.string(),
-  startAt: z.string().min(1),
-  endAt: z.string().min(1),
+  startAt: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .refine((val) => !isNaN(val), {
+      message: "StartAt must be a valid number",
+    }),
+  endAt: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .refine((val) => !isNaN(val), {
+      message: "EndAt must be a valid number",
+    }),
 });

@@ -31,6 +31,7 @@ export type Conversation = Prisma.ConversationGetPayload<{
     endAt: true;
     startAt: true;
     notes: true;
+    result:true
   };
 }>;
 
@@ -58,18 +59,18 @@ const ConversationOverview = ({
                 <TableHead className="w-[100px]">Name</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Duration</TableHead>
-                <TableHead className="text-right">Note</TableHead>
+                <TableHead className="text-right">Result</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {conversations.map((c) => (
-                <TableRow>
+                <TableRow key={c.prospect.name}>
                   <TableCell className="font-medium">
                     {c.prospect.name}
                   </TableCell>
                   <TableCell><TagView tag={c.status} /></TableCell>
                   <TableCell>{getDuration(c.startAt, c.endAt)}</TableCell>
-                  <TableCell className="text-right">{c.notes}</TableCell>
+                  <TableCell className="text-right truncate"><TagView tag={c.result}/></TableCell>
                 </TableRow>
               ))}
             </TableBody>

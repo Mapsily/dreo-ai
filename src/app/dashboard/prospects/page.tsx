@@ -13,6 +13,7 @@ import NoItemsLayout from "@/components/shared/no-items-layout.tsx";
 import { ProspectContextProvider } from "@/context/prospect-provider";
 import UpdateProspectDialog from "@/components/prospects/update-prospect-dialog";
 import DeleteProspectDialog from "@/components/prospects/delete-prospect-dialog";
+import { OutreachSheetButton } from "@/components/shared/outreach-sheet";
 
 const ProspectsPage = async () => {
   const clerkUser = await currentUser();
@@ -24,16 +25,7 @@ const ProspectsPage = async () => {
     <ProspectContextProvider>
       <div className="p-8">
         <InfoBar
-          Actions={
-            isEmpty ? (
-              <></>
-            ) : (
-              <div className="flex gap-2">
-                <UploadProspectSheet />
-                <AddProspectDialogButton />
-              </div>
-            )
-          }
+          Actions={isEmpty ? <></> : <OutreachSheetButton variant="outline" />}
         />
         <ProspectsTable prospects={prospects || []} />
         {isEmpty && (
@@ -41,12 +33,7 @@ const ProspectsPage = async () => {
             description="Your AI needs a list of prospects to start outreach. Add them to begin engaging potential customers."
             imageUrl="/images/no-prospects.png"
             title="No Prospects Yet!"
-            Actions={
-              <div className="flex gap-2">
-                <UploadProspectSheet />
-                <AddProspectDialogButton />
-              </div>
-            }
+            Actions={<OutreachSheetButton variant="outline" />}
           />
         )}
         <AddProspectDialog />

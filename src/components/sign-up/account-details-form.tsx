@@ -1,10 +1,11 @@
 import React from "react";
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
+import { Eye, Lock, Mail, User } from "lucide-react";
+import Image from "next/image";
+
 import FormGenerator from "@/components/shared/form-generator";
 import { Button } from "@/components/ui/button";
 import { useSignUpForm } from "@/hooks/sign-up/use-sign-up";
-import { Eye, Lock, Mail, User } from "lucide-react";
-import Image from "next/image";
 
 type Props = {
   register: UseFormRegister<FieldValues>;
@@ -25,6 +26,7 @@ function AccountDetailsForm({ errors, register }: Props) {
         variant="outline"
         size="sm"
         className="w-full mt-4 mb-2"
+        type="button"
       >
         <Image src="/images/google.png" alt="google" width={30} height={30} />{" "}
         Continue with google

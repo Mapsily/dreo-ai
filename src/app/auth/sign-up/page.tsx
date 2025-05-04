@@ -1,11 +1,11 @@
+import React from "react";
+
 import ButtonHandler from "@/components/sign-up/button-handlers";
 import SignUpFormProvider from "@/components/sign-up/form-provider";
 import RegistrationFormStep from "@/components/sign-up/registration-step";
 import { AuthContextProvider } from "@/context/auth-provider";
 
-import React from "react";
-
-const SignUp = () => {
+export default function SignUp() {
   return (
     <AuthContextProvider>
       <SignUpFormProvider>
@@ -14,6 +14,4 @@ const SignUp = () => {
       </SignUpFormProvider>
     </AuthContextProvider>
   );
-};
-
-export default SignUp;
+}

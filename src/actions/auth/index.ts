@@ -6,7 +6,7 @@ import { Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
 
-export const onCompleteUserRegistration = async (
+export const register = async (
   firstName: string,
   lastName: string,
   email: string,
@@ -28,7 +28,7 @@ export const onCompleteUserRegistration = async (
 };
 
 export const getUser = async () => {
-  noStore()
+  noStore();
   try {
     const { userId } = await auth();
     if (!userId) return { status: 404, data: null };
@@ -37,7 +37,8 @@ export const getUser = async () => {
         clerkId: userId,
       },
     });
-    return { status: 200, data: user };
+    if (user) return { status: 200, data: user };
+    return { status: 404, error: "UnAuthorised" };
   } catch (error) {
     return { status: 500, error: (error as Error).message };
   }
@@ -59,7 +60,21 @@ export const updateUser = async (updates: Prisma.UserUpdateInput) => {
   }
 };
 
-export const onOnboardingSkip = async () => {
+export const skipOnboarding = async () => {
   const res = await updateUser({ isOnboarded: true });
   if (res.status === 200) redirect("/dashboard");
+};
+
+export const googleRegister = async () => {
+  const clerkUser = await currentUser();
+  if (!clerkUser) redirect("/auth/sign-in");
+  const { firstName, lastName, emailAddresses, id } = clerkUser;
+  const { status } = await register(
+    firstName || "",
+    lastName || "",
+    emailAddresses[0].emailAddress,
+    id
+  );
+  if (status === 200) redirect("/plan-select");
+  redirect("/auth/sign-up");
 };

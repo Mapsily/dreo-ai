@@ -6,6 +6,7 @@ import FormGenerator from "@/components/shared/form-generator";
 import { useAdvancedSettings } from "@/hooks/setting/use-setting";
 import { CONVERSATION_DURATIONS, TIMEZONES } from "@/constants/setting";
 import { AdvancedSetting } from "@prisma/client";
+import MultiAddInput from "../shared/multi-add-input";
 
 const AdvanceSettingsForm = ({
   defaultValues,
@@ -15,6 +16,8 @@ const AdvanceSettingsForm = ({
   const { errors, loading, onUpdate, register, control, isDirty } =
     useAdvancedSettings(defaultValues);
 
+    console.log(errors)
+
   return (
     <form className="flex flex-col gap-4">
       <Header
@@ -23,6 +26,13 @@ const AdvanceSettingsForm = ({
         disabled={!isDirty}
         onSave={onUpdate}
       />
+      <InputContainer
+        label="Qualification questions"
+        description="Agent will ask this question to quality the prospect."
+        direction="horizontal"
+      >
+        <MultiAddInput control={control} name="questions" />
+      </InputContainer>
       <InputContainer
         label="Max Conversation Duration"
         description="The maximum number of seconds that a conversation can last."

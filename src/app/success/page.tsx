@@ -1,32 +1,21 @@
-import { BarChart, Bot, Check, Clock, Phone } from "lucide-react";
-import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-import { getUser, onOnboardingSkip } from "@/actions/auth";
-import { setupDefaultSettings } from "@/actions/setting";
+import { PLANS_FEATURES } from "@/constants/plans";
 import { Button } from "@/components/ui/button";
-import { createSubscription } from "@/actions/plan";
+import { getSubscription } from "@/actions/setting";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-const FEATURES = [
-  { text: "Everything in Starter +", Icon: Check },
-  { text: "AI Follow-Ups & Scheduling", Icon: Bot },
-  { text: "Advanced Call Analytics", Icon: BarChart },
-  { text: "10 Calls per Day", Icon: Phone },
-  { text: "1000 Minutes", Icon: Clock },
-];
+export default async function SuccessPage() {
+  const { userId } = await auth();
+  if (!userId) redirect("/auth/sign-in");
 
-type Props = {
-  searchParams: Promise<{ planId: string | undefined }>;
-};
+  const { data: subscription } = await getSubscription(userId);
+  if (!subscription) redirect("/failed");
 
-export default async function SuccessPage({ searchParams }: Props) {
-  const res = await getUser();
-  if (res.status !== 200) redirect("/auth/sign-in");
-  if (res.data?.isOnboarded) redirect("/dashboard");
-  const { planId } = await searchParams;
-  await setupDefaultSettings();
-  await createSubscription(planId || (process.env.DEFAULT_PLAN_ID as string));
+  const features =
+    PLANS_FEATURES.find((p) => p.id === subscription.planId)?.features || [];
 
   return (
     <div className="min-h-screen bg-gray-50 w-full flex flex-col items-center justify-center">
@@ -40,11 +29,11 @@ export default async function SuccessPage({ searchParams }: Props) {
         <h1 className="text-center text-2xl mb-2">Congratulation 🎉</h1>
         <p className="mb-6 text-sm text-gray-600 text-center">
           You are successfully subscribed <br />
-          to the <strong>Growth Plan</strong>
+          to the <strong>{subscription.plan.name}</strong>
         </p>
         <span className="text-sm text-gray-600">Includes:</span>
         <div className="mt-2 flex flex-col gap-2 mb-6">
-          {FEATURES.map(({ text, Icon }) => (
+          {features.map(({ text, Icon }) => (
             <div
               key={text}
               className="flex items-center gap-4 text-sm text-gray-600 "
@@ -54,15 +43,10 @@ export default async function SuccessPage({ searchParams }: Props) {
             </div>
           ))}
         </div>
-        <div className="flex items-center gap-8">
+        <div className="flex justify-center items-center">
           <Button asChild>
-            <Link href="/profile-setup">Profile Setup</Link>
+            <Link href="/dashboard/analytics" replace>Go to dashboard</Link>
           </Button>
-          <form action={onOnboardingSkip}>
-            <Button type="submit" variant="outline">
-              Go to dashboard
-            </Button>
-          </form>
         </div>
       </div>
     </div>

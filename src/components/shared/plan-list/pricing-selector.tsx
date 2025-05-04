@@ -4,7 +4,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { Badge } from "../ui/badge";
+import { Badge } from "../../ui/badge";
 
 const PricingSelector = () => {
   const searchParams = useSearchParams();
@@ -34,7 +34,7 @@ const PricingSelector = () => {
           value="yearly"
           className={cn(value === "yearly" && "!bg-white !text-black")}
         >
-          Yearly <Badge className="ml-2">Save 20%</Badge>
+          Yearly <Badge className="ml-2">Save 15%</Badge>
         </TabsTrigger>
         <TabsTrigger
           value="monthly"

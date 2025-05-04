@@ -6,6 +6,8 @@ type OutreachContextType = {
   openSheet: boolean;
   openOutreachSheet: () => void;
   closeOutreachSheet: () => void;
+  outreachRunning: boolean;
+  updateOutreachRunning: (value: boolean) => void;
 };
 
 const OutreachContext = createContext<OutreachContextType | undefined>(
@@ -18,6 +20,7 @@ export const OutreachContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [openSheet, setOpenSheet] = useState(false);
+  const [outreachRunning, setOutreachRunning] = useState(false);
 
   const openOutreachSheet = () => {
     setOpenSheet(true);
@@ -27,12 +30,18 @@ export const OutreachContextProvider = ({
     setOpenSheet(false);
   };
 
+  const updateOutreachRunning = (value: boolean) => {
+    setOutreachRunning(value);
+  };
+
   return (
     <OutreachContext.Provider
       value={{
         openSheet,
         openOutreachSheet,
         closeOutreachSheet,
+        outreachRunning,
+        updateOutreachRunning,
       }}
     >
       {children}

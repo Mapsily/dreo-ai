@@ -15,12 +15,11 @@ model User {
   clerkId      String        @unique
   phoneNumber  String?
   companyName  String?
-  isOnboarded  Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  products     Product[]
   prospects    Prospect[]
   Tickets      Ticket[]
+  Transactions Transaction[]
   setting      Setting?
   subscription Subscription?
 }
@@ -37,33 +36,32 @@ model Prospect {
   rescheduledCount Int?             @default(0)
   rescheduledFor   DateTime?
   status           PROSPECT_STATUS? @default(INITIAL)
-  appointments     Appointment[]
   conversations    Conversation[]
   user             User             @relation(fields: [userId], references: [id])
 }
 
-model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  price       Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String   @db.Uuid
-  user        User     @relation(fields: [userId], references: [id])
-}
+// model Product {
+//   id          String   @id @default(uuid())
+//   name        String
+//   description String
+//   price       Float
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+//   userId      String   @db.Uuid
+//   user        User     @relation(fields: [userId], references: [id])
+// }
 
-model Appointment {
-  id               String         @id @default(uuid())
-  scheduledFor     DateTime
-  productsInterest String[]
-  interestLevel    INTEREST_LEVEL @default(LOW)
-  notes            String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  prospectId       String
-  prospect         Prospect       @relation(fields: [prospectId], references: [id])
-}
+// model Appointment {
+//   id               String         @id @default(uuid())
+//   scheduledFor     DateTime
+//   productsInterest String[]
+//   interestLevel    INTEREST_LEVEL @default(LOW)
+//   notes            String?
+//   createdAt        DateTime       @default(now())
+//   updatedAt        DateTime       @updatedAt
+//   prospectId       String
+//   prospect         Prospect       @relation(fields: [prospectId], references: [id])
+// }
 
 model Conversation {
   id             String              @id @default(uuid())
@@ -79,18 +77,25 @@ model Conversation {
   prospect       Prospect            @relation(fields: [prospectId], references: [id])
 }
 
+model Transaction {
+  id        String             @id @default(uuid())
+  userId    String             @db.Uuid
+  user      User               @relation(fields: [userId], references: [id])
+  status    TRANSACTION_STATUS @default(INITIATED)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
 model Subscription {
-  id           String      @id @default(uuid())
-  userId       String      @unique @db.Uuid
-  user         User        @relation(fields: [userId], references: [id])
-  plan         Plan        @relation(fields: [planId], references: [id])
+  id           String   @id @default(uuid())
+  userId       String   @unique @db.Uuid
+  user         User     @relation(fields: [userId], references: [id])
+  plan         Plan     @relation(fields: [planId], references: [id])
   planId       String
-  minutesLeft  Int         @default(0)
+  minutesLeft  Int      @default(0)
   expiresAt    DateTime
-  autoRenew    Boolean     @default(false)
-  status       PLAN_STATUS @default(ACTIVE)
-  dailyUsed    Int         @default(0)
-  lastUsedDate DateTime    @default(now())
+  dailyUsed    Int      @default(0)
+  lastUsedDate DateTime @default(now())
 }
 
 model Plan {
@@ -101,9 +106,8 @@ model Plan {
   duration     Int // in days
   perDay       Int
   isPopular    Boolean        @default(false)
-  autoRenew    Boolean
-  Subscription Subscription[]
   createdAt    DateTime       @default(now())
+  subscription Subscription[]
 }
 
 model Setting {
@@ -140,6 +144,7 @@ model ScriptSetting {
 model AdvancedSetting {
   id                      String   @id @default(uuid())
   settingId               String   @unique @db.Uuid
+  questions               String[]
   maxConversationDuration String   @default("300s")
   timeZone                String
   startAt                 Int      @default(9)
@@ -168,6 +173,12 @@ model Response {
   description String
   ticketId    String @db.Uuid
   ticket      Ticket @relation(fields: [ticketId], references: [id])
+}
+
+enum TRANSACTION_STATUS {
+  INITIATED
+  FAILED
+  SUCCESS
 }
 
 enum ISSUE_CATEGORY {
@@ -203,7 +214,7 @@ enum CONVERSATION_STATUS {
 enum PROSPECT_STATUS {
   INITIAL
   RESCHEDULED
-  BOOKED
+  PASSED
   NOTINTERESTED
   NOTRESPONDED
   FAILED

@@ -1,7 +1,5 @@
 import {
   Bot,
-  Box,
-  Calendar,
   ChartLineIcon,
   Contact,
   FileText,
@@ -24,11 +22,6 @@ export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
     path: "analytics",
   },
   {
-    label: "Products",
-    icon: Box,
-    path: "products",
-  },
-  {
     label: "Prospects",
     icon: Contact,
     path: "prospects",
@@ -37,11 +30,6 @@ export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
     label: "Conversations",
     icon: MessageCircle,
     path: "conversations",
-  },
-  {
-    label: "Appointments",
-    icon: Calendar,
-    path: "appointments",
   },
 ];
 

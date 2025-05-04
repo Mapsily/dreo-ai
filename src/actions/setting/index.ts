@@ -129,7 +129,8 @@ export const getSubscription = async (clerkId: string) => {
         plan: true,
       },
     });
-    return { status: 200, data: subscription };
+    if (subscription) return { status: 200, data: subscription };
+    return { status: 404, data: subscription };
   } catch (error) {
     return { status: 500, message: "Server Error" };
   }

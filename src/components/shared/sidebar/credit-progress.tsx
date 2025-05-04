@@ -31,7 +31,7 @@ export const CreditProgress = ({ min = false }: Props) => {
         <div className="flex flex-wrap justify-center text-sm">
           {subscription?.dailyUsed}/ {min && <br />}
           <span>{subscription?.plan.perDay}</span>{" "}
-          {min ? "" : " min used today"}
+          {min ? "" : " called today"}
         </div>
       </div>
     </div>

@@ -9,21 +9,19 @@ export type UserRegistrationProps = {
 };
 
 export const UserRegistrationSchema: ZodType<UserRegistrationProps> = z.object({
-  firstName: z.string().min(1, { message: "your first name required" }),
-  lastName: z.string().min(1, { message: "your last name required" }),
+  firstName: z.string().min(1, { message: "Your first name is required" }),
+  lastName: z.string().min(1, { message: "Your last name is required" }),
   email: z.string().email({ message: "Incorrect email format" }),
   password: z
     .string()
-    .min(8, { message: "Your password must be atleast 8 characters long" })
+    .min(8, { message: "Your password must be at least 8 characters long" })
     .max(64, {
-      message: "Your password can not be longer then 64 characters long",
+      message: "Your password cannot be longer than 64 characters",
     })
-    .refine(
-      (value) => /^[a-zA-Z0-9_.-]*$/.test(value ?? ""),
-      "password should contain only alphabets and numbers"
-    ),
-
-  otp: z.string().min(6, { message: "You must enter a 6 digit code" }),
+    .refine((value) => /[!@#$%^&*(),.?":{}|<>]/.test(value), {
+      message: "Your password must contain at least one special character",
+    }),
+  otp: z.string().min(6, { message: "You must enter a 6-digit code" }),
 });
 
 export type UserLoginProps = {

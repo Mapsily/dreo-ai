@@ -35,16 +35,16 @@ export const useSignInForm = () => {
             title: "Success",
             description: "Welcome back!",
           });
-          router.push("/dashboard");
+          router.push("/dashboard/analytics");
         }
       } catch (error: unknown) {
         const clerkError = error as { errors?: ClerkAPIError[] };
         setLoading(false);
-        if (clerkError?.errors?.[0].code === "form_password_incorrect")
-          toast({
-            title: "Error",
-            description: "email/password is incorrect try again",
-          });
+        toast({
+          title: "Error",
+          description: clerkError?.errors?.[0].message,
+          variant: "destructive",
+        });
       }
     }
   );
@@ -54,14 +54,14 @@ export const useSignInForm = () => {
     try {
       await signIn.authenticateWithRedirect({
         strategy: "oauth_google",
-        redirectUrl: "/dashboard",
+        redirectUrl: "/dashboard/analytics",
         redirectUrlComplete: "/dashboard/analytics",
       });
     } catch (error) {
       toast({
         title: "Error",
         description: (error as Error).message,
-        variant:"destructive"
+        variant: "destructive",
       });
     }
   };
@@ -70,6 +70,6 @@ export const useSignInForm = () => {
     methods,
     onHandleSubmit,
     loading,
-    onGoogleAuth
+    onGoogleAuth,
   };
 };

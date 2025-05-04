@@ -25,7 +25,7 @@ const MenuItem = ({
     <Link
       onClick={onSignOut}
       className={cn(
-        "flex gap-4 items-center p-2 rounded-md hover:text-black",
+        "flex gap-4 items-center py-2 px-4 rounded-md hover:text-black",
         current == path ? "bg-primary" : "text-gray-600",
         className
       )}
